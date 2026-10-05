@@ -25,17 +25,24 @@ const DEFAULT_BADGES = [
 ];
 
 export function AppProvider({ children }) {
-  // Navigation
-  const [activeTab, setActiveTab] = useState('home');
+  // Navigation: Show login page first if not logged in
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEYS.AUTH_USER);
+      return saved ? 'home' : 'auth';
+    } catch {
+      return 'auth';
+    }
+  });
   const [presentationMode, setPresentationMode] = useState(false);
 
-  // Authentication State
+  // Authentication State: Null by default until user logs in (or active session)
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
-      return saved ? JSON.parse(saved) : DEMO_USERS[0]; // Default logged in as Meera for prototype showcase
+      const saved = sessionStorage.getItem(STORAGE_KEYS.AUTH_USER);
+      return saved ? JSON.parse(saved) : null;
     } catch {
-      return DEMO_USERS[0];
+      return null;
     }
   });
 
@@ -215,12 +222,14 @@ export function AppProvider({ children }) {
       };
       setRegisteredUsers(prev => [...prev, newUser]);
       setCurrentUser(newUser);
+      setActiveTab('home');
       fireConfetti();
       showToast(`Welcome to Saturday Vibes, ${newUser.name}!`, 'success');
       return { success: true, user: newUser };
     }
 
     setCurrentUser(found);
+    setActiveTab('home');
     fireConfetti();
     showToast(`Welcome back, ${found.name}!`, 'success');
     return { success: true, user: found };
@@ -250,6 +259,7 @@ export function AppProvider({ children }) {
 
     setRegisteredUsers(prev => [newUser, ...prev]);
     setCurrentUser(newUser);
+    setActiveTab('home');
     setPoints(prev => prev + 25); // Welcome bonus points!
     unlockBadge('first-vibe');
     fireConfetti();
@@ -260,8 +270,10 @@ export function AppProvider({ children }) {
   const logoutUser = () => {
     const name = currentUser?.name || 'Student';
     setCurrentUser(null);
+    sessionStorage.removeItem(STORAGE_KEYS.AUTH_USER);
+    localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
     showToast(`Signed out of ${name}'s profile.`, 'info');
-    setActiveTab('home');
+    setActiveTab('auth'); // Switch immediately to login page on logout!
   };
 
   // Unlock badge utility
@@ -427,17 +439,20 @@ export function AppProvider({ children }) {
   };
 
   const resetAllData = () => {
+    sessionStorage.removeItem(STORAGE_KEYS.AUTH_USER);
     localStorage.removeItem(STORAGE_KEYS.CUSTOM_EVENTS);
     localStorage.removeItem(STORAGE_KEYS.JOINED_IDS);
     localStorage.removeItem(STORAGE_KEYS.POINTS);
     localStorage.removeItem(STORAGE_KEYS.BADGES);
     localStorage.removeItem(STORAGE_KEYS.QUIZ_RESULTS);
+    localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
     setCustomEvents([]);
     setJoinedIds(['evt-2']);
     setPoints(120);
     setBadges(DEFAULT_BADGES);
     setQuizResults(null);
-    setCurrentUser(DEMO_USERS[0]);
+    setCurrentUser(null);
+    setActiveTab('auth');
     showToast('Prototype data reset to initial demo state.', 'info');
   };
 

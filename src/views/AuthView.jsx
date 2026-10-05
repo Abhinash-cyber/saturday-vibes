@@ -18,7 +18,8 @@ import {
   Heart,
   ShieldCheck,
   Building2,
-  MapPin
+  MapPin,
+  Compass
 } from 'lucide-react';
 
 const DEPARTMENTS = [
@@ -487,6 +488,22 @@ export default function AuthView() {
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Sign In to Saturday Vibes</span>
+              </button>
+
+              {/* Quick Guest Access */}
+              <div className="relative flex py-1 items-center">
+                <div className="flex-grow border-t border-slate-200"></div>
+                <span className="flex-shrink mx-3 text-slate-400 text-[10px] font-bold uppercase tracking-wider">Or Quick Access</span>
+                <div className="flex-grow border-t border-slate-200"></div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleQuickLogin(DEMO_USERS[0])}
+                className="w-full py-2.5 rounded-2xl border border-slate-200 hover:border-rose-300 hover:bg-rose-50/60 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Compass className="w-4 h-4 text-rose-500" />
+                <span>Explore as Guest (Meera - Student Persona)</span>
               </button>
 
               <p className="text-center text-xs text-slate-500 pt-1">

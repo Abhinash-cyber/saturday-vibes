@@ -198,9 +198,13 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => handleNavClick('auth')}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-colors cursor-pointer ${
+                  activeTab === 'auth'
+                    ? 'border-rose-400 bg-rose-50 text-rose-700 ring-2 ring-rose-400/20 shadow-xs'
+                    : 'border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
               >
-                <User className="w-3.5 h-3.5 text-slate-500" />
+                <User className={`w-3.5 h-3.5 ${activeTab === 'auth' ? 'text-rose-600' : 'text-slate-500'}`} />
                 <span>Log In / Sign Up</span>
               </button>
             )}
