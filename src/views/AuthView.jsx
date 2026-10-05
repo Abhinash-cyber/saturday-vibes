@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp, DEMO_USERS } from '../context/AppContext';
+import mvgrCampusImg from '../assets/mvgr-campus.png';
 import { 
   Sparkles, 
   User, 
@@ -15,7 +16,9 @@ import {
   Award, 
   CalendarCheck,
   Heart,
-  ShieldCheck
+  ShieldCheck,
+  Building2,
+  MapPin
 } from 'lucide-react';
 
 const DEPARTMENTS = [
@@ -26,7 +29,7 @@ const DEPARTMENTS = [
   'Mechanical Engineering',
   'Media, Arts & Literature',
   'Business Administration',
-  'Architecture & Planning'
+  'Civil Engineering & Architecture'
 ];
 
 const YEARS = ['1st Year', '2nd Year', '3rd Year', 'Final Year', 'Postgraduate'];
@@ -143,31 +146,48 @@ export default function AuthView() {
     });
   };
 
-  // If already logged in, show student profile card
+  // If already logged in, show student profile card with campus header
   if (currentUser) {
     return (
-      <div className="max-w-2xl mx-auto py-8 space-y-8 animate-in fade-in duration-300">
+      <div className="max-w-3xl mx-auto py-8 space-y-8 animate-in fade-in duration-300">
         
         {/* Profile Card */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-md overflow-hidden">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
           
-          {/* Header Banner */}
-          <div className="bg-gradient-to-r from-rose-500 via-purple-600 to-indigo-600 p-6 sm:p-8 text-white">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
+          {/* Header Banner Featuring MVGR Campus Image */}
+          <div className="relative h-56 sm:h-64 overflow-hidden">
+            <img
+              src={mvgrCampusImg}
+              alt="MVGR College of Engineering Campus"
+              className="w-full h-full object-cover object-center"
+            />
+            {/* Gradient Overlay for high readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/30" />
+            
+            {/* Campus badge overlay */}
+            <div className="absolute top-4 left-4 flex items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-amber-300 text-xs font-black uppercase tracking-wider border border-white/20 flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5" />
+                <span>MVGR Autonomous</span>
+              </span>
+            </div>
+
+            {/* Profile Info Anchored at Bottom */}
+            <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row items-center sm:items-end gap-4 text-white">
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
-                className="w-20 h-20 rounded-3xl object-cover ring-4 ring-white/30 shadow-lg shrink-0 bg-white"
+                className="w-20 h-20 rounded-3xl object-cover ring-4 ring-white/80 shadow-2xl bg-white shrink-0"
               />
-              <div className="flex-1 space-y-1">
+              <div className="flex-1 text-center sm:text-left space-y-0.5">
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                  <h2 className="text-2xl font-black">{currentUser.name}</h2>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/20">
+                  <h2 className="text-2xl font-black text-white">{currentUser.name}</h2>
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-500 text-white">
                     {currentUser.year || 'Student'}
                   </span>
                 </div>
-                <p className="text-xs text-rose-100 font-medium">{currentUser.email}</p>
-                <p className="text-xs text-rose-200">
+                <p className="text-xs text-slate-300 font-medium">{currentUser.email}</p>
+                <p className="text-xs text-amber-300 font-semibold">
                   {currentUser.department} • <span className="font-mono">{currentUser.rollNo}</span>
                 </p>
               </div>
@@ -268,346 +288,406 @@ export default function AuthView() {
     );
   }
 
-  // Logged-out state: Show Login & Sign Up Forms
+  // Logged-out state: Split-Screen Layout featuring MVGR Campus Image
   return (
-    <div className="max-w-xl mx-auto py-6 space-y-8 animate-in fade-in duration-300">
+    <div className="max-w-5xl mx-auto py-6 space-y-8 animate-in fade-in duration-300">
       
-      {/* Brand Header */}
-      <div className="text-center space-y-3">
-        <div className="w-14 h-14 rounded-3xl bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 flex items-center justify-center text-white mx-auto shadow-lg text-2xl">
-          ✨
+      {/* Main Split Container */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        
+        {/* LEFT COLUMN: Featured MVGR Campus Showcase */}
+        <div className="lg:col-span-5 relative bg-slate-900 text-white flex flex-col justify-between min-h-[380px] lg:min-h-[640px] overflow-hidden">
+          
+          {/* Background Campus Entrance Image */}
+          <img
+            src={mvgrCampusImg}
+            alt="MVGR Autonomous Campus Gate"
+            className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700"
+          />
+
+          {/* Gradient Lighting Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/40" />
+
+          {/* Top Brand Badges */}
+          <div className="relative z-10 p-6 sm:p-8 space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs font-black uppercase tracking-wider">
+              <Building2 className="w-3.5 h-3.5 text-amber-300" />
+              <span>MVGR Autonomous</span>
+            </div>
+            
+            <h3 className="text-xl sm:text-2xl font-black text-white leading-tight drop-shadow-md">
+              Maharaj Vijayaram Gajapathi Raj College of Engineering
+            </h3>
+            <p className="text-xs text-rose-200 font-medium">
+              Saturday Vibes • Campus Student Portal
+            </p>
+          </div>
+
+          {/* Bottom Highlights Overlay */}
+          <div className="relative z-10 p-6 sm:p-8 bg-slate-950/70 backdrop-blur-md border-t border-white/10 space-y-3">
+            <p className="text-xs text-slate-200 leading-relaxed font-medium">
+              "Reimagining Saturdays for our campus students — from monotonous routines into personal discovery, student-hosted jams, and vibrant peer connections."
+            </p>
+
+            <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] font-semibold text-rose-200">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>Verified MVGR Hub</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>Student-Led Clubs</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>Buddy Attendance</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>Zero Compulsion</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-          Welcome to Saturday Vibes
-        </h1>
-        <p className="text-slate-500 text-xs sm:text-sm max-w-sm mx-auto">
-          Log in with your campus credentials to personalize your weekend, match with buddies, and host student events.
-        </p>
-      </div>
 
-      {/* Mode Switch Tabs */}
-      <div className="bg-slate-100 p-1.5 rounded-2xl flex items-center max-w-md mx-auto">
-        <button
-          onClick={() => { setMode('login'); setLoginError(''); setSignupError(''); }}
-          className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            mode === 'login'
-              ? 'bg-white text-slate-900 shadow-xs'
-              : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          Sign In
-        </button>
+        {/* RIGHT COLUMN: The Auth Forms */}
+        <div className="lg:col-span-7 p-6 sm:p-10 space-y-6 flex flex-col justify-center">
+          
+          {/* Form Header */}
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold uppercase tracking-wider mb-1">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Student Authentication</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              {mode === 'login' ? 'Sign in to Saturday Vibes' : 'Create MVGR Student Account'}
+            </h2>
+            <p className="text-slate-500 text-xs sm:text-sm">
+              {mode === 'login' 
+                ? 'Access your scheduled events, points, and peer buddy invitations.' 
+                : 'Join the campus platform and get +25 welcome points instantly.'}
+            </p>
+          </div>
 
-        <button
-          onClick={() => { setMode('signup'); setLoginError(''); setSignupError(''); }}
-          className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            mode === 'signup'
-              ? 'bg-white text-slate-900 shadow-xs'
-              : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          Create Student Account
-        </button>
-      </div>
-
-      {/* Quick Demo Logins Banner */}
-      <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs space-y-2">
-        <div className="flex items-center gap-1.5 font-bold text-amber-900">
-          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-          <span>Quick 1-Click Demo Logins (For Lab Evaluators):</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-          {DEMO_USERS.map((demo) => (
+          {/* Mode Switch Tabs */}
+          <div className="bg-slate-100 p-1.5 rounded-2xl flex items-center">
             <button
-              key={demo.id}
-              type="button"
-              onClick={() => handleQuickLogin(demo)}
-              className="p-2 rounded-xl bg-white hover:bg-amber-100/70 border border-amber-200 text-slate-800 text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-2 shadow-2xs"
-            >
-              <img src={demo.avatar} alt={demo.name} className="w-6 h-6 rounded-full object-cover" />
-              <div className="text-left truncate">
-                <p className="truncate font-bold leading-tight">{demo.name}</p>
-                <span className="text-[9px] text-amber-700 block">{demo.year}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* LOGIN FORM */}
-      {mode === 'login' ? (
-        <form onSubmit={handleLoginSubmit} className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-5">
-          <div className="border-b border-slate-100 pb-3">
-            <h2 className="text-lg font-bold text-slate-900">Sign in to your account</h2>
-            <p className="text-xs text-slate-500">Enter your campus email or use one of the demo accounts above.</p>
-          </div>
-
-          {loginError && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-              {loginError}
-            </div>
-          )}
-
-          {/* Email */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              Campus Email
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="email"
-                required
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                placeholder="meera.cs@campus.edu"
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-hidden focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 text-xs sm:text-sm font-medium text-slate-800"
-              />
-            </div>
-          </div>
-
-          {/* Password */}
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Password
-              </label>
-              <button
-                type="button"
-                onClick={() => alert('Password hint for demo accounts: "password123" (or enter any password).')}
-                className="text-[11px] text-rose-600 hover:underline font-semibold cursor-pointer"
-              >
-                Forgot password?
-              </button>
-            </div>
-            <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                required
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full pl-10 pr-10 py-3 rounded-2xl border border-slate-200 focus:outline-hidden focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 text-xs sm:text-sm font-medium text-slate-800"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-amber-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-bold text-sm shadow-md shadow-rose-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Sign In to Saturday Vibes</span>
-          </button>
-
-          <p className="text-center text-xs text-slate-500">
-            Don't have an account yet?{' '}
-            <button
-              type="button"
-              onClick={() => setMode('signup')}
-              className="text-rose-600 font-bold hover:underline cursor-pointer"
-            >
-              Create student account
-            </button>
-          </p>
-        </form>
-      ) : (
-        /* SIGN UP FORM */
-        <form onSubmit={handleSignupSubmit} className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4">
-          <div className="border-b border-slate-100 pb-3">
-            <h2 className="text-lg font-bold text-slate-900">Create Student Profile</h2>
-            <p className="text-xs text-slate-500">Join the campus hub and earn +25 welcome points instantly.</p>
-          </div>
-
-          {signupError && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-              {signupError}
-            </div>
-          )}
-
-          {/* Name & Roll No */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Full Name *
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  required
-                  value={signupData.name}
-                  onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                  placeholder="e.g. Meera Sharma"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-800"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Roll No / Student ID *
-              </label>
-              <div className="relative">
-                <IdCard className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  required
-                  value={signupData.rollNo}
-                  onChange={(e) => setSignupData({ ...signupData, rollNo: e.target.value })}
-                  placeholder="e.g. 21BCE0482"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-800"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Campus Email */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-              Campus Email *
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="email"
-                required
-                value={signupData.email}
-                onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                placeholder="meera.cs@campus.edu"
-                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-800"
-              />
-            </div>
-          </div>
-
-          {/* Department & Academic Year */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Department / Major *
-              </label>
-              <select
-                value={signupData.department}
-                onChange={(e) => setSignupData({ ...signupData, department: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 bg-white"
-              >
-                {DEPARTMENTS.map((dept) => (
-                  <option key={dept} value={dept}>{dept}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Year of Study
-              </label>
-              <select
-                value={signupData.year}
-                onChange={(e) => setSignupData({ ...signupData, year: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 bg-white"
-              >
-                {YEARS.map((yr) => (
-                  <option key={yr} value={yr}>{yr}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Password & Confirm */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Password *
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={signupData.password}
-                  onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                  placeholder="Min 6 chars"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Confirm Password *
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={signupData.confirmPassword}
-                  onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })}
-                  placeholder="Repeat password"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Vibe Interests Multi-select */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              Select Your Weekend Vibes (Interests)
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-              {VIBE_INTERESTS.map((item) => {
-                const active = signupData.vibes.includes(item.id);
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => toggleVibe(item.id)}
-                    className={`p-2 rounded-xl text-[11px] font-bold border text-left transition-all cursor-pointer ${
-                      active
-                        ? 'bg-rose-500 text-white border-rose-500 shadow-2xs'
-                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Submit */}
-          <div className="pt-2">
-            <button
-              type="submit"
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:from-amber-600 hover:to-purple-700 text-white font-bold text-sm shadow-md shadow-rose-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Create Account (+25 Welcome Points)</span>
-            </button>
-          </div>
-
-          <p className="text-center text-xs text-slate-500">
-            Already have an account?{' '}
-            <button
-              type="button"
-              onClick={() => setMode('login')}
-              className="text-rose-600 font-bold hover:underline cursor-pointer"
+              onClick={() => { setMode('login'); setLoginError(''); setSignupError(''); }}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                mode === 'login'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
               Sign In
             </button>
-          </p>
-        </form>
-      )}
+
+            <button
+              onClick={() => { setMode('signup'); setLoginError(''); setSignupError(''); }}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                mode === 'signup'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Create Student Account
+            </button>
+          </div>
+
+          {/* Quick Demo Logins for Lab Evaluators */}
+          <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs space-y-2">
+            <div className="flex items-center gap-1.5 font-bold text-amber-900">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span>1-Click Demo Profiles (For Lab Evaluators):</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-0.5">
+              {DEMO_USERS.map((demo) => (
+                <button
+                  key={demo.id}
+                  type="button"
+                  onClick={() => handleQuickLogin(demo)}
+                  className="p-2 rounded-xl bg-white hover:bg-amber-100/70 border border-amber-200 text-slate-800 text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-2 shadow-2xs"
+                >
+                  <img src={demo.avatar} alt={demo.name} className="w-6 h-6 rounded-full object-cover" />
+                  <div className="text-left truncate">
+                    <p className="truncate font-bold leading-tight">{demo.name}</p>
+                    <span className="text-[9px] text-amber-700 block">{demo.year}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* LOGIN FORM */}
+          {mode === 'login' ? (
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              
+              {loginError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                  {loginError}
+                </div>
+              )}
+
+              {/* Email */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Campus Email
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="meera.cs@mvgrce.edu.in"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-hidden focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 text-xs sm:text-sm font-medium text-slate-800"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => alert('Password hint for demo accounts: "password123" (or enter any password).')}
+                    className="text-[11px] text-rose-600 hover:underline font-semibold cursor-pointer"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-10 py-3 rounded-2xl border border-slate-200 focus:outline-hidden focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 text-xs sm:text-sm font-medium text-slate-800"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-amber-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-bold text-sm shadow-md shadow-rose-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Sign In to Saturday Vibes</span>
+              </button>
+
+              <p className="text-center text-xs text-slate-500 pt-1">
+                Don't have an account yet?{' '}
+                <button
+                  type="button"
+                  onClick={() => setMode('signup')}
+                  className="text-rose-600 font-bold hover:underline cursor-pointer"
+                >
+                  Create student account
+                </button>
+              </p>
+            </form>
+          ) : (
+            /* SIGN UP FORM */
+            <form onSubmit={handleSignupSubmit} className="space-y-3.5">
+              
+              {signupError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                  {signupError}
+                </div>
+              )}
+
+              {/* Name & Roll No */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Full Name *
+                  </label>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      required
+                      value={signupData.name}
+                      onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                      placeholder="e.g. Meera Sharma"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Roll No / Student ID *
+                  </label>
+                  <div className="relative">
+                    <IdCard className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      required
+                      value={signupData.rollNo}
+                      onChange={(e) => setSignupData({ ...signupData, rollNo: e.target.value })}
+                      placeholder="e.g. 21331A05A1"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Campus Email */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Campus Email *
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    value={signupData.email}
+                    onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                    placeholder="student@mvgrce.edu.in"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-800"
+                  />
+                </div>
+              </div>
+
+              {/* Department & Academic Year */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Department / Major *
+                  </label>
+                  <select
+                    value={signupData.department}
+                    onChange={(e) => setSignupData({ ...signupData, department: e.target.value })}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 bg-white"
+                  >
+                    {DEPARTMENTS.map((dept) => (
+                      <option key={dept} value={dept}>{dept}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Year of Study
+                  </label>
+                  <select
+                    value={signupData.year}
+                    onChange={(e) => setSignupData({ ...signupData, year: e.target.value })}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 bg-white"
+                  >
+                    {YEARS.map((yr) => (
+                      <option key={yr} value={yr}>{yr}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Password & Confirm */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Password *
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={signupData.password}
+                      onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                      placeholder="Min 6 chars"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Confirm Password *
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={signupData.confirmPassword}
+                      onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })}
+                      placeholder="Repeat password"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Vibe Interests Multi-select */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Select Your Weekend Vibes (Interests)
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  {VIBE_INTERESTS.map((item) => {
+                    const active = signupData.vibes.includes(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => toggleVibe(item.id)}
+                        className={`p-2 rounded-xl text-[11px] font-bold border text-left transition-all cursor-pointer ${
+                          active
+                            ? 'bg-rose-500 text-white border-rose-500 shadow-2xs'
+                            : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Submit */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:from-amber-600 hover:to-purple-700 text-white font-bold text-sm shadow-md shadow-rose-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Create Account (+25 Welcome Points)</span>
+                </button>
+              </div>
+
+              <p className="text-center text-xs text-slate-500">
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  className="text-rose-600 font-bold hover:underline cursor-pointer"
+                >
+                  Sign In
+                </button>
+              </p>
+            </form>
+          )}
+
+        </div>
+
+      </div>
 
     </div>
   );
