@@ -2,6 +2,7 @@
 import { INITIAL_EVENTS, CATEGORIES_LIST } from './src/data/initialEvents.js';
 import { DIVERGENT_IDEAS, CONVERGENT_EVALUATION, PERSONA_MEERA, TESTING_RESULTS } from './src/data/designProcessData.js';
 import { DEMO_BUDDIES } from './src/data/buddiesData.js';
+import { DEMO_USERS } from './src/data/usersData.js';
 
 console.log('🧪 Starting Saturday Vibes Automated Verification Suite...\n');
 
@@ -112,6 +113,13 @@ const mockCustomEvent = {
 const combined = [mockCustomEvent, ...INITIAL_EVENTS];
 assert(combined[0].title === 'Student Drone Flight Lab', 'Custom event prepends successfully to event feed');
 assert(combined.find(e => e.id === mockCustomEvent.id).isStudentLed === true, 'Custom event is tagged as student-led');
+
+// 5. Student Authentication & Profile Verification
+console.log('\n--- 5. Student Authentication & Profile Verification ---');
+assert(DEMO_USERS.length >= 3, `Demo user profiles count is ${DEMO_USERS.length} (>= 3 required)`);
+assert(DEMO_USERS.some(u => u.name.includes('Meera')), 'Meera profile available for quick login');
+assert(DEMO_USERS.some(u => u.name.includes('Aarav')), 'Aarav profile available for quick login');
+assert(DEMO_USERS.some(u => u.name.includes('Priya')), 'Priya profile available for quick login');
 
 console.log('\n======================================');
 console.log(`SUMMARY: ${testsPassed} Passed, ${testsFailed} Failed`);

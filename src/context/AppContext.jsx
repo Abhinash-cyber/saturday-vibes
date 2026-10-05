@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { INITIAL_EVENTS } from '../data/initialEvents';
+import { DEMO_USERS } from '../data/usersData';
+export { DEMO_USERS };
 
 const AppContext = createContext();
 
@@ -9,7 +11,9 @@ const STORAGE_KEYS = {
   JOINED_IDS: 'saturday_vibes_joined_ids_v1',
   POINTS: 'saturday_vibes_points_v1',
   BADGES: 'saturday_vibes_badges_v1',
-  QUIZ_RESULTS: 'saturday_vibes_quiz_results_v1'
+  QUIZ_RESULTS: 'saturday_vibes_quiz_results_v1',
+  AUTH_USER: 'saturday_vibes_auth_user_v1',
+  USERS_DB: 'saturday_vibes_registered_users_v1'
 };
 
 const DEFAULT_BADGES = [
@@ -24,6 +28,26 @@ export function AppProvider({ children }) {
   // Navigation
   const [activeTab, setActiveTab] = useState('home');
   const [presentationMode, setPresentationMode] = useState(false);
+
+  // Authentication State
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
+      return saved ? JSON.parse(saved) : DEMO_USERS[0]; // Default logged in as Meera for prototype showcase
+    } catch {
+      return DEMO_USERS[0];
+    }
+  });
+
+  // Registered Users Directory (in localStorage)
+  const [registeredUsers, setRegisteredUsers] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.USERS_DB);
+      return saved ? JSON.parse(saved) : DEMO_USERS;
+    } catch {
+      return DEMO_USERS;
+    }
+  });
 
   // Events: Initial + Custom from LocalStorage
   const [customEvents, setCustomEvents] = useState(() => {
@@ -79,6 +103,27 @@ export function AppProvider({ children }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [buddyModalEvent, setBuddyModalEvent] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
+
+  // Sync Auth to LocalStorage
+  useEffect(() => {
+    try {
+      if (currentUser) {
+        localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(registeredUsers));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [registeredUsers]);
 
   // Sync to LocalStorage
   useEffect(() => {
@@ -148,6 +193,77 @@ export function AppProvider({ children }) {
     }
   };
 
+  // Auth Functions
+  const loginUser = (email, password) => {
+    const found = registeredUsers.find(
+      u => u.email.toLowerCase() === email.trim().toLowerCase()
+    );
+
+    if (!found) {
+      // Create user on the fly if valid campus email
+      const generatedName = email.split('@')[0].replace(/[._]/g, ' ');
+      const newUser = {
+        id: `user-${Date.now()}`,
+        name: generatedName.charAt(0).toUpperCase() + generatedName.slice(1),
+        email: email.trim(),
+        rollNo: `24STU${Math.floor(1000 + Math.random() * 9000)}`,
+        department: 'Campus Student',
+        year: 'Undergraduate',
+        avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(email)}`,
+        bio: 'Ready to make Saturdays count!',
+        vibes: ['Art', 'Music', 'Tech']
+      };
+      setRegisteredUsers(prev => [...prev, newUser]);
+      setCurrentUser(newUser);
+      fireConfetti();
+      showToast(`Welcome to Saturday Vibes, ${newUser.name}!`, 'success');
+      return { success: true, user: newUser };
+    }
+
+    setCurrentUser(found);
+    fireConfetti();
+    showToast(`Welcome back, ${found.name}!`, 'success');
+    return { success: true, user: found };
+  };
+
+  const signupUser = (formData) => {
+    const existing = registeredUsers.find(
+      u => u.email.toLowerCase() === formData.email.trim().toLowerCase()
+    );
+
+    if (existing) {
+      showToast('An account with this campus email already exists. Please log in.', 'info');
+      return { success: false, message: 'Email already registered' };
+    }
+
+    const newUser = {
+      id: `user-${Date.now()}`,
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      rollNo: formData.rollNo.trim() || `24ENG${Math.floor(1000 + Math.random() * 9000)}`,
+      department: formData.department || 'Digital Engineering',
+      year: formData.year || '1st Year',
+      avatar: formData.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(formData.name)}`,
+      bio: formData.bio || 'Excited to discover campus Saturday vibes!',
+      vibes: formData.vibes || ['Art', 'Gaming', 'Music']
+    };
+
+    setRegisteredUsers(prev => [newUser, ...prev]);
+    setCurrentUser(newUser);
+    setPoints(prev => prev + 25); // Welcome bonus points!
+    unlockBadge('first-vibe');
+    fireConfetti();
+    showToast(`Account created! Welcome to the hub, ${newUser.name} (+25 pts)`, 'success');
+    return { success: true, user: newUser };
+  };
+
+  const logoutUser = () => {
+    const name = currentUser?.name || 'Student';
+    setCurrentUser(null);
+    showToast(`Signed out of ${name}'s profile.`, 'info');
+    setActiveTab('home');
+  };
+
   // Unlock badge utility
   const unlockBadge = (badgeId) => {
     setBadges(prev =>
@@ -201,8 +317,8 @@ export function AppProvider({ children }) {
       mode: formData.mode || 'Indoor',
       moods: formData.moods && formData.moods.length ? formData.moods : ['Creative', 'Social'],
       participationType: formData.participationType || 'With Friends',
-      organizer: `${formData.organizerName} (Student Organizer)`,
-      organizerContact: formData.organizerContact || 'student@campus.edu',
+      organizer: `${formData.organizerName || currentUser?.name || 'Student'} (Student Organizer)`,
+      organizerContact: formData.organizerContact || currentUser?.email || 'student@campus.edu',
       participants: 1,
       maxParticipants: parseInt(formData.maxParticipants, 10) || 20,
       difficulty: 'Student Hosted',
@@ -321,6 +437,7 @@ export function AppProvider({ children }) {
     setPoints(120);
     setBadges(DEFAULT_BADGES);
     setQuizResults(null);
+    setCurrentUser(DEMO_USERS[0]);
     showToast('Prototype data reset to initial demo state.', 'info');
   };
 
@@ -331,6 +448,12 @@ export function AppProvider({ children }) {
         setActiveTab,
         presentationMode,
         setPresentationMode,
+        currentUser,
+        setCurrentUser,
+        registeredUsers,
+        loginUser,
+        signupUser,
+        logoutUser,
         events: allEvents,
         joinedIds,
         points,

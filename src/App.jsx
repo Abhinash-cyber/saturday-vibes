@@ -13,8 +13,8 @@ import DiscoverView from './views/DiscoverView';
 import RecommendationQuiz from './components/RecommendationQuiz';
 import CreateEventForm from './components/CreateEventForm';
 import MySaturday from './components/MySaturday';
-import DesignProcessView from './views/DesignProcessView';
 import AboutProjectView from './views/AboutProjectView';
+import AuthView from './views/AuthView';
 
 function AppContent() {
   const { activeTab } = useApp();
@@ -33,8 +33,8 @@ function AppContent() {
         {activeTab === 'events' && <DiscoverView />}
         {activeTab === 'create' && <CreateEventForm />}
         {activeTab === 'mysaturday' && <MySaturday />}
-        {activeTab === 'process' && <DesignProcessView />}
         {activeTab === 'about' && <AboutProjectView />}
+        {activeTab === 'auth' && <AuthView />}
       </main>
 
       {/* Persistent Footer */}

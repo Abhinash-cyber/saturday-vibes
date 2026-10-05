@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Sparkles, Heart, Compass, PlusCircle, Lightbulb, GraduationCap, ArrowUp } from 'lucide-react';
+import { Sparkles, Heart, Compass, PlusCircle, User, GraduationCap, ArrowUp } from 'lucide-react';
 
 export default function Footer() {
   const { setActiveTab } = useApp();
@@ -91,10 +91,18 @@ export default function Footer() {
               </li>
               <li>
                 <button
-                  onClick={() => navigateTo('process')}
+                  onClick={() => navigateTo('auth')}
                   className="text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
                 >
-                  Our Process (Design Thinking)
+                  Student Login / Sign Up
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigateTo('about')}
+                  className="text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+                >
+                  About the Project
                 </button>
               </li>
             </ul>

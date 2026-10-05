@@ -25,7 +25,8 @@ export default function MySaturday() {
     setBuddyModalEvent,
     setActiveTab, 
     points, 
-    badges 
+    badges,
+    currentUser
   } = useApp();
 
   // Filter joined events and sort chronologically by rawHour
@@ -46,10 +47,10 @@ export default function MySaturday() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
               <CalendarDays className="w-3.5 h-3.5" />
-              <span>Personalized Weekend Dashboard</span>
+              <span>{currentUser ? `${currentUser.name} (${currentUser.rollNo})` : 'Personalized Weekend Dashboard'}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
-              My Saturday Schedule
+              {currentUser ? `${currentUser.name.split(' ')[0]}'s Saturday Schedule` : 'My Saturday Schedule'}
             </h2>
             <p className="mt-1 text-slate-300 text-sm max-w-xl">
               Here is your custom-curated Saturday itinerary. Enjoy activities at your own pace without pressure.

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export default function CreateEventForm() {
-  const { createNewEvent, setActiveTab } = useApp();
+  const { createNewEvent, setActiveTab, currentUser } = useApp();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -26,12 +26,22 @@ export default function CreateEventForm() {
     location: '',
     duration: '2 hours',
     maxParticipants: 20,
-    organizerName: '',
-    organizerContact: '',
+    organizerName: currentUser?.name || '',
+    organizerContact: currentUser?.email || '',
     mode: 'Indoor',
     whatToBring: '',
     moods: ['Creative', 'Social']
   });
+
+  React.useEffect(() => {
+    if (currentUser) {
+      setFormData(prev => ({
+        ...prev,
+        organizerName: prev.organizerName || currentUser.name,
+        organizerContact: prev.organizerContact || currentUser.email
+      }));
+    }
+  }, [currentUser]);
 
   const [submitted, setSubmitted] = useState(false);
   const [createdTitle, setCreatedTitle] = useState('');

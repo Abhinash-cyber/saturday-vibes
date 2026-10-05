@@ -12,11 +12,12 @@ import {
   CheckCircle2, 
   Presentation,
   Flame,
-  Award
+  Award,
+  User
 } from 'lucide-react';
 
 export default function HomeView() {
-  const { events, setActiveTab, setPresentationMode } = useApp();
+  const { events, setActiveTab, setPresentationMode, currentUser } = useApp();
 
   const featuredEvents = events.slice(0, 3);
 
@@ -38,10 +39,14 @@ export default function HomeView() {
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/10 via-rose-500/15 to-purple-600/15 border border-rose-200/80 p-6 sm:p-12 lg:p-16 text-center sm:text-left">
         <div className="max-w-3xl space-y-6 relative z-10">
           
-          {/* Eyebrow badge */}
+          {/* Eyebrow badge / Personalized student greeting */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500 text-white text-xs font-bold tracking-wide shadow-sm shadow-rose-500/20">
             <Sparkles className="w-3.5 h-3.5 animate-spin" />
-            <span>Digital Engineering Lab Capstone</span>
+            {currentUser ? (
+              <span>Hey, {currentUser.name}! Ready for this Saturday?</span>
+            ) : (
+              <span>Digital Engineering Lab Capstone</span>
+            )}
           </div>
 
           {/* Main Hero Header */}
@@ -77,10 +82,11 @@ export default function HomeView() {
             </button>
 
             <button
-              onClick={() => setActiveTab('process')}
+              onClick={() => setActiveTab('auth')}
               className="w-full sm:w-auto px-5 py-4 rounded-2xl text-slate-600 hover:text-slate-900 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <span>Our Design Thinking Process</span>
+              <User className="w-4 h-4 text-slate-500" />
+              <span>{currentUser ? 'My Profile' : 'Student Login / Sign Up'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -160,7 +166,7 @@ export default function HomeView() {
         </div>
       </section>
 
-      {/* 04. VISUAL STORY SECTION (Section 33) */}
+      {/* 04. VISUAL STORY SECTION */}
       <section className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl space-y-8">
         <div className="max-w-2xl space-y-2">
           <span className="text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full bg-white/10 text-amber-300">
@@ -170,7 +176,7 @@ export default function HomeView() {
             Why Reimagining Saturdays Matters
           </h2>
           <p className="text-slate-400 text-xs sm:text-sm">
-            How a design-thinking intervention solved weekend campus absenteeism.
+            How student autonomy and personalized discovery solved weekend campus absenteeism.
           </p>
         </div>
 
@@ -263,7 +269,7 @@ export default function HomeView() {
             Digital Engineering Lab Project Presentation
           </h3>
           <p className="text-xs sm:text-sm text-purple-200 max-w-xl">
-            Want to review the complete human-centered engineering flow from Empathy to Usability Testing?
+            Demonstrating how student-centered personalization and flexible event creation solve campus weekend disengagement.
           </p>
         </div>
 
@@ -277,10 +283,10 @@ export default function HomeView() {
           </button>
 
           <button
-            onClick={() => setActiveTab('process')}
+            onClick={() => setActiveTab('about')}
             className="px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-colors cursor-pointer"
           >
-            Read Our Process
+            About Project
           </button>
         </div>
       </section>
