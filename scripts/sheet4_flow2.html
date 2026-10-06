@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sheet 2 (4 Screens)</title>
+  <style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  .a3-container-4 {
+    width: 1440px;
+    height: 1018px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    padding: 20px 40px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .phone-mockup {
+    width: 295px;
+    height: 650px;
+    background: #0f141f;
+    border: 8px solid #0f141f;
+    border-radius: 46px;
+    position: relative;
+    box-shadow: 
+      0 28px 56px -12px rgba(15, 23, 42, 0.28),
+      0 12px 24px -8px rgba(15, 23, 42, 0.16),
+      0 0 0 1px rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #f8fafc;
+    border-radius: 38px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .dark-screen {
+    background: #0a0f1d;
+    color: #f1f5f9;
+  }
+  .dynamic-island {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 74px;
+    height: 21px;
+    background: #000000;
+    border-radius: 11px;
+    z-index: 100;
+  }
+  .camera-dot {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0c1524;
+    border: 1px solid #1e293b;
+  }
+  .sensor-dot {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #060910;
+  }
+  .status-bar {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    right: 20px;
+    height: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 90;
+    font-size: 11px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+  }
+  .dark-screen .status-bar {
+    color: #ffffff;
+  }
+  .status-icons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .signal-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5px;
+    height: 10px;
+  }
+  .signal-bar {
+    width: 2.5px;
+    background: currentColor;
+    border-radius: 0.5px;
+  }
+  .battery-icon {
+    width: 19px;
+    height: 9.5px;
+    border: 1.2px solid currentColor;
+    border-radius: 2.5px;
+    padding: 1px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .battery-icon::after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    width: 1.5px;
+    height: 4px;
+    background: currentColor;
+    border-radius: 0 1px 1px 0;
+  }
+  .battery-level {
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    border-radius: 1px;
+  }
+  .home-indicator {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 105px;
+    height: 4px;
+    background: #0f172a;
+    border-radius: 2px;
+    z-index: 100;
+  }
+  .dark-screen .home-indicator {
+    background: #ffffff;
+  }
+  .screen-content {
+    flex: 1;
+    padding: 38px 11px 18px 11px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .bottom-nav {
+    height: 44px;
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px 4px 8px;
+    flex-shrink: 0;
+    z-index: 20;
+  }
+  .dark-screen .bottom-nav {
+    background: rgba(15, 23, 42, 0.96);
+    border-top: 1px solid #1e293b;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5px;
+    font-size: 8px;
+    font-weight: 600;
+    color: #64748b;
+  }
+  .nav-item.active {
+    color: #e11d48;
+  }
+  .dark-screen .nav-item.active {
+    color: #f43f5e;
+  }
+  .nav-icon {
+    width: 13px;
+    height: 13px;
+  }
+</style>
+</head>
+<body>
+  <div class="a3-container-4">
+    
+    <div class="phone-mockup">
+      <div class="phone-screen ">
+        <div class="dynamic-island">
+          <div class="sensor-dot"></div>
+          <div class="camera-dot"></div>
+        </div>
+        <div class="status-bar">
+          <span>9:30</span>
+          <div class="status-icons">
+            <div class="signal-bars">
+              <div class="signal-bar" style="height: 3px;"></div>
+              <div class="signal-bar" style="height: 5px;"></div>
+              <div class="signal-bar" style="height: 7px;"></div>
+              <div class="signal-bar" style="height: 9px;"></div>
+            </div>
+            <svg width="12" height="10" viewBox="0 0 16 12" fill="currentColor">
+              <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM3.5 6.5a6.5 6.5 0 019 0l-1.4 1.4a4.5 4.5 0 00-6.2 0L3.5 6.5zM1 4a10 10 0 0114 0L13.6 5.4a8 8 0 00-11.2 0L1 4z"/>
+            </svg>
+            <div class="battery-icon"><div class="battery-level"></div></div>
+          </div>
+        </div>
+        
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+        <span style="font-size: 7.5px; font-weight: 700; color: #475569;">‹ Back to Discover</span>
+        <span style="background: #ffe4e6; color: #be123c; font-size: 6.5px; font-weight: 800; padding: 2px 6px; border-radius: 10px;">🎨 Art & Design</span>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #fb7185, #e11d48); border-radius: 13px; padding: 9px; color: #fff; margin-bottom: 7px;">
+        <h2 style="font-size: 12px; font-weight: 900; line-height: 1.2;">Art Jam & Canvas Splash</h2>
+        <p style="font-size: 7.5px; opacity: 0.9; margin-top: 2px;">Paint freely, share techniques, and unwind with peers.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 7px;">
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4.5px 6px;">
+          <div style="font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase;">Date & Time</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #0f172a;">Sat, 11:00 AM (2 hrs)</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4.5px 6px;">
+          <div style="font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase;">Location</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #0f172a;">Studio 204, Fine Arts</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4.5px 6px;">
+          <div style="font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase;">Organizer</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #0f172a;">Vikram (Student Lead)</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4.5px 6px;">
+          <div style="font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase;">Availability</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #059669;">14 / 20 Registered</div>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px; margin-bottom: 6px;">
+        <div style="font-size: 7px; font-weight: 800; color: #334155; text-transform: uppercase; margin-bottom: 2px;">What To Bring & Setup</div>
+        <div style="font-size: 6.5px; color: #475569; display: flex; flex-direction: column; gap: 1.5px;">
+          <div>✓ Canvases & acrylic colors supplied by club</div>
+          <div>✓ Aprons and painting brushes available</div>
+          <div>✓ No prior experience required (Zero intimidation)</div>
+        </div>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 7px;">
+        <div style="font-size: 6.5px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Classmates Attending (14)</div>
+        <div style="display: flex; align-items: center; gap: 4px; font-size: 7px; color: #334155;">
+          <span>Sneha P., Rohan K., Ananya S. +11 others</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px;">
+      <div style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 9px; font-weight: 800; text-align: center; padding: 7.5px; border-radius: 9px; box-shadow: 0 2px 6px rgba(16,185,129,0.3);">
+        ✓ Joined in My Saturday (+20 pts)
+      </div>
+      <div style="background: #ffffff; border: 1.5px solid #f43f5e; color: #be123c; font-size: 8.5px; font-weight: 800; text-align: center; padding: 6px; border-radius: 9px;">
+        🤝 Invite Friend (Buddy Mode)
+      </div>
+    </div>
+  </div>
+
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  
+    
+    <div class="phone-mockup">
+      <div class="phone-screen ">
+        <div class="dynamic-island">
+          <div class="sensor-dot"></div>
+          <div class="camera-dot"></div>
+        </div>
+        <div class="status-bar">
+          <span>9:30</span>
+          <div class="status-icons">
+            <div class="signal-bars">
+              <div class="signal-bar" style="height: 3px;"></div>
+              <div class="signal-bar" style="height: 5px;"></div>
+              <div class="signal-bar" style="height: 7px;"></div>
+              <div class="signal-bar" style="height: 9px;"></div>
+            </div>
+            <svg width="12" height="10" viewBox="0 0 16 12" fill="currentColor">
+              <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM3.5 6.5a6.5 6.5 0 019 0l-1.4 1.4a4.5 4.5 0 00-6.2 0L3.5 6.5zM1 4a10 10 0 0114 0L13.6 5.4a8 8 0 00-11.2 0L1 4z"/>
+            </svg>
+            <div class="battery-icon"><div class="battery-level"></div></div>
+          </div>
+        </div>
+        
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span style="font-size: 7.5px; font-weight: 700; color: #475569;">‹ Back</span>
+        <span style="background: #ecfdf5; color: #059669; font-size: 6.5px; font-weight: 800; padding: 1.5px 5px; border-radius: 8px;">Peer Support</span>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #0ea5e9, #3b82f6); border-radius: 13px; padding: 8px; color: #fff; margin-bottom: 7px;">
+        <span style="background: rgba(255,255,255,0.25); font-size: 6px; font-weight: 800; padding: 1px 4px; border-radius: 5px; text-transform: uppercase;">Buddy Mode</span>
+        <h3 style="font-size: 10.5px; font-weight: 900; margin: 2px 0 1px 0;">Never Attend Alone 🤝</h3>
+        <p style="font-size: 7px; opacity: 0.9;">Invite campus friends or match with classmates attending this vibe.</p>
+      </div>
+
+      <div style="background: #f1f5f9; border-radius: 7px; padding: 4px 6px; font-size: 7px; color: #334155; margin-bottom: 6px;">
+        Inviting peers to: <strong style="color: #0f172a;">Art Jam & Canvas Splash</strong>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 7px; padding: 4.5px 7px; font-size: 7.5px; color: #94a3b8; margin-bottom: 7px;">
+        🔍 Search classmates by name or roll no...
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #fed7aa; display: flex; align-items: center; justify-content: center; font-size: 10px;">👨‍🎓</div>
+            <div>
+              <div style="font-size: 8px; font-weight: 800; color: #0f172a;">Rohan K.</div>
+              <div style="font-size: 6px; color: #64748b;">3rd Yr CSE • Shared: Art & Chill</div>
+            </div>
+          </div>
+          <div style="background: #f43f5e; color: #fff; font-size: 6.5px; font-weight: 800; padding: 2.5px 6px; border-radius: 5px;">Invite</div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #ddd6fe; display: flex; align-items: center; justify-content: center; font-size: 10px;">👩‍🎓</div>
+            <div>
+              <div style="font-size: 8px; font-weight: 800; color: #0f172a;">Sneha P.</div>
+              <div style="font-size: 6px; color: #64748b;">2nd Yr IT • Shared: Creative</div>
+            </div>
+          </div>
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; font-size: 6.5px; font-weight: 800; padding: 2.5px 6px; border-radius: 5px;">✓ Invited</div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #fbcfe8; display: flex; align-items: center; justify-content: center; font-size: 10px;">👩‍🎨</div>
+            <div>
+              <div style="font-size: 8px; font-weight: 800; color: #0f172a;">Ananya S.</div>
+              <div style="font-size: 6px; color: #059669; font-weight: 700;">Already Attending! 🎉</div>
+            </div>
+          </div>
+          <div style="background: #f1f5f9; color: #475569; font-size: 6.5px; font-weight: 700; padding: 2.5px 6px; border-radius: 5px;">Chat</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 9px; padding: 5px 7px; text-align: center; font-size: 6.5px; color: #64748b; margin-bottom: 2px;">
+      💡 Low-Pressure Rule: You can meet at the studio entrance or sit together. Zero social anxiety.
+    </div>
+  </div>
+
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  
+    
+    <div class="phone-mockup">
+      <div class="phone-screen ">
+        <div class="dynamic-island">
+          <div class="sensor-dot"></div>
+          <div class="camera-dot"></div>
+        </div>
+        <div class="status-bar">
+          <span>9:30</span>
+          <div class="status-icons">
+            <div class="signal-bars">
+              <div class="signal-bar" style="height: 3px;"></div>
+              <div class="signal-bar" style="height: 5px;"></div>
+              <div class="signal-bar" style="height: 7px;"></div>
+              <div class="signal-bar" style="height: 9px;"></div>
+            </div>
+            <svg width="12" height="10" viewBox="0 0 16 12" fill="currentColor">
+              <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM3.5 6.5a6.5 6.5 0 019 0l-1.4 1.4a4.5 4.5 0 00-6.2 0L3.5 6.5zM1 4a10 10 0 0114 0L13.6 5.4a8 8 0 00-11.2 0L1 4z"/>
+            </svg>
+            <div class="battery-icon"><div class="battery-level"></div></div>
+          </div>
+        </div>
+        
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+        <span style="font-size: 12px; font-weight: 900; color: #0f172a;">Find My Saturday</span>
+        <span style="background: #f3e8ff; color: #7e22ce; font-size: 7px; font-weight: 800; padding: 2px 6px; border-radius: 10px;">AI Recommender</span>
+      </div>
+      <p style="font-size: 7.5px; color: #64748b; margin-bottom: 8px;">Step 2 of 5 • Tailoring activities to your energy level</p>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 8px;">
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">1. What's your Saturday mood?</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 3px;">
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">Energetic</div>
+            <div style="background: #ffe4e6; border: 1.5px solid #f43f5e; color: #be123c; font-weight: 700; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">🎨 Creative ✓</div>
+            <div style="background: #f3e8ff; border: 1.5px solid #9333ea; color: #6b21a8; font-weight: 700; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">🤝 Social ✓</div>
+            <div style="background: #ecfdf5; border: 1.5px solid #059669; color: #065f46; font-weight: 700; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">🧘 Relaxed ✓</div>
+          </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 8px;">
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">2. How do you want to participate?</div>
+          <div style="display: flex; gap: 3px;">
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">Alone</div>
+            <div style="background: #dbeafe; border: 1.5px solid #2563eb; color: #1e40af; font-weight: 800; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">👥 With Friends ✓</div>
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">Meet New</div>
+          </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 8px;">
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">3. How much time do you have?</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 3px;">
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">&lt; 1 hour</div>
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">1–2 hours</div>
+            <div style="background: #fef3c7; border: 1.5px solid #d97706; color: #92400e; font-weight: 800; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">⏰ 2–4 hours ✓</div>
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">Flexible</div>
+          </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 8px;">
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">4. Preferred activity mode:</div>
+          <div style="display: flex; gap: 4px;">
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">Indoor</div>
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">Outdoor</div>
+            <div style="background: #f1f5f9; border: 1.5px solid #475569; color: #0f172a; font-weight: 800; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">🌿 Either ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #f59e0b, #f43f5e, #8b5cf6); color: #fff; font-size: 9.5px; font-weight: 800; text-align: center; padding: 8.5px; border-radius: 11px; box-shadow: 0 4px 10px rgba(244,63,94,0.35);">
+      Generate My Saturday Vibes ✨
+    </div>
+  </div>
+
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  
+    
+    <div class="phone-mockup">
+      <div class="phone-screen ">
+        <div class="dynamic-island">
+          <div class="sensor-dot"></div>
+          <div class="camera-dot"></div>
+        </div>
+        <div class="status-bar">
+          <span>9:30</span>
+          <div class="status-icons">
+            <div class="signal-bars">
+              <div class="signal-bar" style="height: 3px;"></div>
+              <div class="signal-bar" style="height: 5px;"></div>
+              <div class="signal-bar" style="height: 7px;"></div>
+              <div class="signal-bar" style="height: 9px;"></div>
+            </div>
+            <svg width="12" height="10" viewBox="0 0 16 12" fill="currentColor">
+              <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM3.5 6.5a6.5 6.5 0 019 0l-1.4 1.4a4.5 4.5 0 00-6.2 0L3.5 6.5zM1 4a10 10 0 0114 0L13.6 5.4a8 8 0 00-11.2 0L1 4z"/>
+            </svg>
+            <div class="battery-icon"><div class="battery-level"></div></div>
+          </div>
+        </div>
+        
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border-radius: 12px; padding: 8px; color: #fff; margin-bottom: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 6.5px; font-weight: 800; background: rgba(255,255,255,0.25); padding: 1.5px 5px; border-radius: 6px;">YOUR SATURDAY VIBE</span>
+          <span style="font-size: 8px; font-weight: 900; background: #fff; color: #db2777; padding: 1.5px 6px; border-radius: 10px;">96% Match</span>
+        </div>
+        <p style="font-size: 8px; font-weight: 800; margin-top: 3px;">You seem to be a Creative + Social + Relaxed person.</p>
+      </div>
+
+      <div style="background: #fff; border: 1.5px solid #f43f5e; border-radius: 10px; padding: 6px 8px; margin-bottom: 5px; box-shadow: 0 2px 6px rgba(244,63,94,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="background: #ffe4e6; color: #9f1239; font-size: 6px; font-weight: 800; padding: 1px 4px; border-radius: 4px;">TOP MATCH • 96%</span>
+          <span style="font-size: 6.5px; color: #059669; font-weight: 800;">✓ In Schedule</span>
+        </div>
+        <h4 style="font-size: 9px; font-weight: 900; color: #0f172a;">Art Jam & Canvas Splash</h4>
+        <div style="font-size: 6.5px; color: #64748b; margin-bottom: 2px;">⏰ 11:00 AM • Fine Arts Studio 204</div>
+        <div style="background: #fff1f2; border-radius: 5px; padding: 2.5px 5px; font-size: 6px; color: #9f1239;">
+          ✦ Matches your Creative mood & With Friends vibe
+        </div>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 8px; margin-bottom: 5px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="background: #f1f5f9; color: #475569; font-size: 6px; font-weight: 700; padding: 1px 4px; border-radius: 4px;">91% MATCH</span>
+          <span style="font-size: 6.5px; color: #f43f5e; font-weight: 800;">+ Add</span>
+        </div>
+        <h4 style="font-size: 9px; font-weight: 900; color: #0f172a;">Campus Photography Walk</h4>
+        <div style="font-size: 6.5px; color: #64748b; margin-bottom: 2px;">⏰ 03:00 PM • Campus Quad Clock Tower</div>
+        <div style="background: #f8fafc; border-radius: 5px; padding: 2.5px 5px; font-size: 6px; color: #475569;">
+          ✦ Fits 2-4h window & outdoor relaxed preference
+        </div>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="background: #f1f5f9; color: #475569; font-size: 6px; font-weight: 700; padding: 1px 4px; border-radius: 4px;">88% MATCH</span>
+          <span style="font-size: 6.5px; color: #f43f5e; font-weight: 800;">+ Add</span>
+        </div>
+        <h4 style="font-size: 9px; font-weight: 900; color: #0f172a;">Cozy Movie Screening & Popcorn</h4>
+        <div style="font-size: 6.5px; color: #64748b; margin-bottom: 2px;">⏰ 06:30 PM • Seminar Auditorium B</div>
+        <div style="background: #f8fafc; border-radius: 5px; padding: 2.5px 5px; font-size: 6px; color: #475569;">
+          ✦ Fits your Relaxed mood preference
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <div style="background: #0f172a; color: #fff; font-size: 8.5px; font-weight: 800; text-align: center; padding: 7px; border-radius: 9px;">
+        View My Saturday Schedule ➔
+      </div>
+      <div style="background: #f1f5f9; color: #475569; font-size: 7px; font-weight: 700; text-align: center; padding: 4px; border-radius: 7px;">
+        Retake Questionnaire
+      </div>
+    </div>
+  </div>
+
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  
+  </div>
+</body>
+</html>
