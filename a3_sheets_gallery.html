@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0f172a;
+      background: #0b0f19;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: #f8fafc;
       padding: 30px;
@@ -17,105 +17,188 @@
       margin: 0 auto 30px auto;
       text-align: center;
     }
+    .badge-top {
+      display: inline-block;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #fb7185;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
     .header h1 {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 900;
-      background: linear-gradient(135deg, #f43f5e, #f59e0b, #a855f7);
+      background: linear-gradient(135deg, #f43f5e, #fb7185, #f59e0b, #a855f7);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
     }
     .header p {
       color: #94a3b8;
       font-size: 14px;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.5;
     }
     .actions {
-      margin-top: 15px;
+      margin-top: 20px;
       display: flex;
       justify-content: center;
       gap: 12px;
+      flex-wrap: wrap;
     }
     .btn {
       background: #f43f5e;
       color: #fff;
       border: none;
-      padding: 10px 18px;
-      border-radius: 10px;
+      padding: 10px 20px;
+      border-radius: 12px;
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(244, 63, 94, 0.5);
     }
     .btn-secondary {
       background: #1e293b;
       border: 1px solid #334155;
       color: #cbd5e1;
+      box-shadow: none;
+    }
+    .btn-secondary:hover {
+      background: #273549;
+      color: #fff;
+    }
+    .view-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 24px auto 30px auto;
+      background: #1e293b;
+      padding: 6px;
+      border-radius: 14px;
+      max-width: 650px;
+      border: 1px solid #334155;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #f43f5e;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
     }
     .gallery {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 40px;
     }
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-desc {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
     .sheet-card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 20px;
+      background: #131d2e;
+      border: 1px solid #233148;
+      border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: transform 0.2s;
+    }
+    .sheet-card:hover {
+      border-color: #3b82f6;
     }
     .sheet-header {
-      padding: 16px 20px;
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
+      padding: 16px 24px;
+      background: #182235;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid #233148;
     }
     .sheet-title {
       font-size: 16px;
       font-weight: 800;
-      color: #f1f5f9;
+      color: #f8fafc;
     }
     .sheet-screens {
       font-size: 12px;
-      color: #fb7185;
-      font-weight: 600;
+      color: #94a3b8;
+      margin-top: 4px;
     }
     .sheet-preview {
-      width: 100%;
-      background: #ffffff;
+      padding: 16px;
+      background: #0b0f19;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 10px;
     }
     .sheet-preview img {
-      width: 100%;
+      max-width: 100%;
       height: auto;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
       display: block;
-      border-radius: 8px;
     }
     @media print {
       body {
         background: #ffffff;
         padding: 0;
+        margin: 0;
       }
-      .header, .actions, .sheet-header {
+      .header, .actions, .view-tabs, .sheet-header {
         display: none !important;
+      }
+      .gallery {
+        gap: 0;
       }
       .sheet-card {
         border: none;
         box-shadow: none;
         page-break-after: always;
-        border-radius: 0;
+        break-after: page;
+        margin: 0;
+        padding: 0;
+        background: #fff;
       }
       .sheet-preview {
         padding: 0;
+        background: #fff;
       }
       .sheet-preview img {
         width: 100vw;
@@ -132,73 +215,188 @@
 <body>
 
   <div class="header">
+    <div class="badge-top">Capstone Presentation Suite</div>
     <h1>Saturday Vibes — A3 Presentation Mockups</h1>
-    <p>Digital Engineering Lab Capstone Project • MVGR College of Engineering</p>
+    <p>Reimagining Saturdays: Making Campus Activities Irresistible • Digital Engineering Lab Capstone Project • MVGR Autonomous College of Engineering</p>
     <div class="actions">
       <button class="btn" onclick="window.print()">🖨️ Print / Save All as A3 PDF</button>
       <a class="btn btn-secondary" href="https://abhinash-cyber.github.io/saturday-vibes/" target="_blank">🌐 Live Project Website</a>
+      <a class="btn btn-secondary" href="saturday_vibes_master_4in1_sheet.png" download>📥 Download Master Poster (4-in-1)</a>
     </div>
+  </div>
+
+  <div class="view-tabs">
+    <button class="tab-btn active" onclick="filterGallery('all', this)">Show All Sheets</button>
+    <button class="tab-btn" onclick="filterGallery('four-screen', this)">4 Screens Per Sheet (New)</button>
+    <button class="tab-btn" onclick="filterGallery('master-poster', this)">Master Poster (4-in-1)</button>
+    <button class="tab-btn" onclick="filterGallery('three-screen', this)">3 Screens Per Sheet</button>
   </div>
 
   <div class="gallery">
 
-    <!-- SHEET 1 -->
-    <div class="sheet-card">
-      <div class="sheet-header">
-        <div>
-          <div class="sheet-title">Sheet 1: Campus Identity, Authentication & Home Hub</div>
-          <div class="sheet-screens">Screen 1: Campus Login (MVGR Gate) • Screen 2: Student Sign Up & Vibe Selection • Screen 3: Saturday Vibes Home Hub</div>
+    <!-- MASTER 4-IN-1 POSTER -->
+    <div class="sheet-group master-poster">
+      <div class="section-title">🖼️ Master Poster — 4 Presentation Sheets Combined</div>
+      <div class="section-desc">Single master A3 presentation board displaying 4 complete sheets (all 12 mobile screens) in a 2x2 grid.</div>
+      <div class="sheet-card">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Master 4-in-1 Presentation Poster Board</div>
+            <div class="sheet-screens">12 Mobile Screens • 4 Complete Flows • High Resolution Print-Ready</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_master_4in1_sheet.png" download>Download PNG</a>
         </div>
-        <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_1.png" download>Download PNG</a>
-      </div>
-      <div class="sheet-preview">
-        <img src="saturday_vibes_a3_sheet_1.png" alt="Saturday Vibes Sheet 1">
+        <div class="sheet-preview">
+          <img src="saturday_vibes_master_4in1_sheet.png" alt="Saturday Vibes Master 4-in-1 Sheet">
+        </div>
       </div>
     </div>
 
-    <!-- SHEET 2 -->
-    <div class="sheet-card">
-      <div class="sheet-header">
-        <div>
-          <div class="sheet-title">Sheet 2: Activity Discovery, Details & Peer Buddy Mode</div>
-          <div class="sheet-screens">Screen 1: Discover Activities Feed • Screen 2: Event Details Screen • Screen 3: Buddy Mode (Never Attend Alone)</div>
+    <!-- 4-SCREENS PER SHEET -->
+    <div class="sheet-group four-screen">
+      <div class="section-title" style="margin-top: 20px;">📱 4 Screens Per Sheet Presentation Mockups</div>
+      <div class="section-desc">Ultra-clean ISO A3 landscape sheets featuring 4 iPhone titanium mockups side-by-side with Dynamic Island and status bars.</div>
+
+      <!-- PRIMARY FLOW SHEET (4 SCREENS) -->
+      <div class="sheet-card" style="margin-bottom: 24px;">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Primary User Journey (4 Screens Side-by-Side)</div>
+            <div class="sheet-screens">Screen 1: Campus Login (MVGR Gate) • Screen 2: Saturday Vibes Home Hub • Screen 3: Personalized Recommendation (96% Match) • Screen 4: Meera's Live Itinerary</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_4_screens_sheet.png" download>Download PNG</a>
         </div>
-        <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_2.png" download>Download PNG</a>
+        <div class="sheet-preview">
+          <img src="saturday_vibes_4_screens_sheet.png" alt="Saturday Vibes 4 Screens Primary Flow Sheet">
+        </div>
       </div>
-      <div class="sheet-preview">
-        <img src="saturday_vibes_a3_sheet_2.png" alt="Saturday Vibes Sheet 2">
+
+      <!-- 4-SCREEN SHEET 1 -->
+      <div class="sheet-card" style="margin-bottom: 24px;">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Flow 1: Campus Authentication & Activity Discovery (4 Screens)</div>
+            <div class="sheet-screens">Screen 1: Campus Login (MVGR Gate) • Screen 2: Student Sign Up & Vibe Selection • Screen 3: Saturday Vibes Home Hub • Screen 4: Discover Activities Feed</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_4screens_sheet_1.png" download>Download PNG</a>
+        </div>
+        <div class="sheet-preview">
+          <img src="saturday_vibes_4screens_sheet_1.png" alt="Saturday Vibes 4 Screens Sheet 1">
+        </div>
+      </div>
+
+      <!-- 4-SCREEN SHEET 2 -->
+      <div class="sheet-card" style="margin-bottom: 24px;">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Flow 2: Event Experience, Peer Buddy & AI Match Quiz (4 Screens)</div>
+            <div class="sheet-screens">Screen 1: Event Details Screen • Screen 2: Buddy Mode (Never Attend Alone) • Screen 3: Find My Saturday Quiz • Screen 4: Personalized Recommendation (96% Match)</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_4screens_sheet_2.png" download>Download PNG</a>
+        </div>
+        <div class="sheet-preview">
+          <img src="saturday_vibes_4screens_sheet_2.png" alt="Saturday Vibes 4 Screens Sheet 2">
+        </div>
+      </div>
+
+      <!-- 4-SCREEN SHEET 3 -->
+      <div class="sheet-card" style="margin-bottom: 24px;">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Flow 3: Student Host, Schedule, Profile Badges & Persona (4 Screens)</div>
+            <div class="sheet-screens">Screen 1: Host / Create Student Event • Screen 2: Meera's Saturday Itinerary • Screen 3: MVGR Student ID & Badges • Screen 4: Capstone Design Journey & Meera Persona</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_4screens_sheet_3.png" download>Download PNG</a>
+        </div>
+        <div class="sheet-preview">
+          <img src="saturday_vibes_4screens_sheet_3.png" alt="Saturday Vibes 4 Screens Sheet 3">
+        </div>
       </div>
     </div>
 
-    <!-- SHEET 3 -->
-    <div class="sheet-card">
-      <div class="sheet-header">
-        <div>
-          <div class="sheet-title">Sheet 3: Personalization Algorithm & Student Event Creation</div>
-          <div class="sheet-screens">Screen 1: Find My Saturday Quiz • Screen 2: Personalized Recommendation (96% Match) • Screen 3: Host Student-Led Event</div>
-        </div>
-        <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_3.png" download>Download PNG</a>
-      </div>
-      <div class="sheet-preview">
-        <img src="saturday_vibes_a3_sheet_3.png" alt="Saturday Vibes Sheet 3">
-      </div>
-    </div>
+    <!-- 3-SCREENS PER SHEET -->
+    <div class="sheet-group three-screen">
+      <div class="section-title" style="margin-top: 20px;">📐 3 Screens Per Sheet Presentation Mockups</div>
+      <div class="section-desc">Spacious 3-screen layout with large device scale matching standard academic presentation panels.</div>
 
-    <!-- SHEET 4 -->
-    <div class="sheet-card">
-      <div class="sheet-header">
-        <div>
-          <div class="sheet-title">Sheet 4: Student Schedule, Gamification Badges & Capstone Persona</div>
-          <div class="sheet-screens">Screen 1: Meera's Saturday Itinerary • Screen 2: MVGR Student ID & Badges • Screen 3: Capstone Design Journey & Meera Persona</div>
+      <!-- SHEET 1 -->
+      <div class="sheet-card" style="margin-bottom: 24px;">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Sheet 1: Campus Identity, Authentication & Home Hub (3 Screens)</div>
+            <div class="sheet-screens">Screen 1: Campus Login (MVGR Gate) • Screen 2: Student Sign Up & Vibe Selection • Screen 3: Saturday Vibes Home Hub</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_1.png" download>Download PNG</a>
         </div>
-        <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_4.png" download>Download PNG</a>
+        <div class="sheet-preview">
+          <img src="saturday_vibes_a3_sheet_1.png" alt="Saturday Vibes Sheet 1">
+        </div>
       </div>
-      <div class="sheet-preview">
-        <img src="saturday_vibes_a3_sheet_4.png" alt="Saturday Vibes Sheet 4">
+
+      <!-- SHEET 2 -->
+      <div class="sheet-card" style="margin-bottom: 24px;">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Sheet 2: Activity Discovery, Details & Peer Buddy Mode (3 Screens)</div>
+            <div class="sheet-screens">Screen 1: Discover Activities Feed • Screen 2: Event Details Screen • Screen 3: Buddy Mode (Never Attend Alone)</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_2.png" download>Download PNG</a>
+        </div>
+        <div class="sheet-preview">
+          <img src="saturday_vibes_a3_sheet_2.png" alt="Saturday Vibes Sheet 2">
+        </div>
+      </div>
+
+      <!-- SHEET 3 -->
+      <div class="sheet-card" style="margin-bottom: 24px;">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Sheet 3: Personalization Algorithm & Student Event Creation (3 Screens)</div>
+            <div class="sheet-screens">Screen 1: Find My Saturday Quiz • Screen 2: Personalized Recommendation (96% Match) • Screen 3: Host Student-Led Event</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_3.png" download>Download PNG</a>
+        </div>
+        <div class="sheet-preview">
+          <img src="saturday_vibes_a3_sheet_3.png" alt="Saturday Vibes Sheet 3">
+        </div>
+      </div>
+
+      <!-- SHEET 4 -->
+      <div class="sheet-card" style="margin-bottom: 24px;">
+        <div class="sheet-header">
+          <div>
+            <div class="sheet-title">Sheet 4: Student Schedule, Gamification Badges & Capstone Persona (3 Screens)</div>
+            <div class="sheet-screens">Screen 1: Meera's Saturday Itinerary • Screen 2: MVGR Student ID & Badges • Screen 3: Capstone Design Journey & Meera Persona</div>
+          </div>
+          <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_4.png" download>Download PNG</a>
+        </div>
+        <div class="sheet-preview">
+          <img src="saturday_vibes_a3_sheet_4.png" alt="Saturday Vibes Sheet 4">
+        </div>
       </div>
     </div>
 
   </div>
+
+  <script>
+    function filterGallery(group, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const groups = document.querySelectorAll('.sheet-group');
+      if (group === 'all') {
+        groups.forEach(g => g.style.display = 'block');
+      } else {
+        groups.forEach(g => {
+          if (g.classList.contains(group)) {
+            g.style.display = 'block';
+          } else {
+            g.style.display = 'none';
+          }
+        });
+      }
+    }
+  </script>
 
 </body>
 </html>
