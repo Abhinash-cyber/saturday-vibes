@@ -1,0 +1,1181 @@
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '..');
+
+// Read MVGR Campus image as base64 for reliable rendering
+const mvgrPath = path.join(rootDir, 'src', 'assets', 'mvgr-campus.png');
+const mvgrBase64 = 'data:image/png;base64,' + fs.readFileSync(mvgrPath).toString('base64');
+
+console.log('Generating polished A3 presentation sheets for Saturday Vibes...');
+
+const sharedStyles = `
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  .a3-container {
+    width: 1024px;
+    height: 723px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 15px 30px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .phone-mockup {
+    width: 292px;
+    height: 646px;
+    background: #0f141f;
+    border: 8px solid #0f141f;
+    border-radius: 46px;
+    position: relative;
+    box-shadow: 
+      0 28px 56px -12px rgba(15, 23, 42, 0.28),
+      0 12px 24px -8px rgba(15, 23, 42, 0.16),
+      0 0 0 1px rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #f8fafc;
+    border-radius: 38px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .dark-screen {
+    background: #0a0f1d;
+    color: #f1f5f9;
+  }
+  .dynamic-island {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 74px;
+    height: 21px;
+    background: #000000;
+    border-radius: 11px;
+    z-index: 100;
+  }
+  .camera-dot {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0c1524;
+    border: 1px solid #1e293b;
+  }
+  .sensor-dot {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #060910;
+  }
+  .status-bar {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    right: 20px;
+    height: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 90;
+    font-size: 11px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+  }
+  .dark-screen .status-bar {
+    color: #ffffff;
+  }
+  .status-icons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .signal-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5px;
+    height: 10px;
+  }
+  .signal-bar {
+    width: 2.5px;
+    background: currentColor;
+    border-radius: 0.5px;
+  }
+  .battery-icon {
+    width: 19px;
+    height: 9.5px;
+    border: 1.2px solid currentColor;
+    border-radius: 2.5px;
+    padding: 1px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .battery-icon::after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    width: 1.5px;
+    height: 4px;
+    background: currentColor;
+    border-radius: 0 1px 1px 0;
+  }
+  .battery-level {
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    border-radius: 1px;
+  }
+  .home-indicator {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 105px;
+    height: 4px;
+    background: #0f172a;
+    border-radius: 2px;
+    z-index: 100;
+  }
+  .dark-screen .home-indicator {
+    background: #ffffff;
+  }
+  .screen-content {
+    flex: 1;
+    padding: 38px 11px 18px 11px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .bottom-nav {
+    height: 44px;
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px 4px 8px;
+    flex-shrink: 0;
+    z-index: 20;
+  }
+  .dark-screen .bottom-nav {
+    background: rgba(15, 23, 42, 0.96);
+    border-top: 1px solid #1e293b;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5px;
+    font-size: 8px;
+    font-weight: 600;
+    color: #64748b;
+  }
+  .nav-item.active {
+    color: #e11d48;
+  }
+  .dark-screen .nav-item.active {
+    color: #f43f5e;
+  }
+  .nav-icon {
+    width: 13px;
+    height: 13px;
+  }
+`;
+
+function wrapPhone(content, isDark = false) {
+  return `
+    <div class="phone-mockup">
+      <div class="phone-screen ${isDark ? 'dark-screen' : ''}">
+        <div class="dynamic-island">
+          <div class="sensor-dot"></div>
+          <div class="camera-dot"></div>
+        </div>
+        <div class="status-bar">
+          <span>9:30</span>
+          <div class="status-icons">
+            <div class="signal-bars">
+              <div class="signal-bar" style="height: 3px;"></div>
+              <div class="signal-bar" style="height: 5px;"></div>
+              <div class="signal-bar" style="height: 7px;"></div>
+              <div class="signal-bar" style="height: 9px;"></div>
+            </div>
+            <svg width="12" height="10" viewBox="0 0 16 12" fill="currentColor">
+              <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM3.5 6.5a6.5 6.5 0 019 0l-1.4 1.4a4.5 4.5 0 00-6.2 0L3.5 6.5zM1 4a10 10 0 0114 0L13.6 5.4a8 8 0 00-11.2 0L1 4z"/>
+            </svg>
+            <div class="battery-icon"><div class="battery-level"></div></div>
+          </div>
+        </div>
+        ${content}
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// SHEET 1: Onboarding, Campus Identity & Hub Home
+// -------------------------------------------------------------
+const sheet1_screen1 = `
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <!-- Campus Gate Banner -->
+    <div style="position: relative; height: 172px; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.12);">
+      <img src="${mvgrBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+      <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,15,30,0.96) 0%, rgba(10,15,30,0.45) 60%, rgba(0,0,0,0.1) 100%);"></div>
+      <div style="position: absolute; top: 8px; left: 10px; background: rgba(255,255,255,0.22); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 2px 7px; color: #fff; font-size: 8px; font-weight: 800; text-transform: uppercase;">
+        🏛️ MVGR Autonomous
+      </div>
+      <div style="position: absolute; bottom: 8px; left: 10px; right: 10px; color: #fff;">
+        <h3 style="font-size: 11px; font-weight: 900; line-height: 1.25; margin-bottom: 2px;">Maharaj Vijayaram Gajapathi Raj College of Engineering</h3>
+        <p style="font-size: 7.5px; color: #fecdd3; font-weight: 600;">Saturday Vibes • Campus Student Portal</p>
+      </div>
+    </div>
+
+    <!-- Auth Card -->
+    <div style="background: #ffffff; border-radius: 16px; padding: 10px 11px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-top: 5px;">
+      <div style="display: flex; background: #f1f5f9; padding: 2px; border-radius: 10px; margin-bottom: 7px;">
+        <div style="flex: 1; text-align: center; font-size: 8.5px; font-weight: 700; padding: 4px; background: #fff; border-radius: 8px; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">Sign In</div>
+        <div style="flex: 1; text-align: center; font-size: 8.5px; font-weight: 600; padding: 4px; color: #64748b;">Sign Up</div>
+      </div>
+
+      <div style="margin-bottom: 6px;">
+        <label style="font-size: 7.5px; font-weight: 800; color: #475569; text-transform: uppercase; display: block; margin-bottom: 2px;">Campus Email</label>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px 8px; font-size: 9px; color: #0f172a; font-weight: 500;">
+          meera.cs@mvgrce.edu.in
+        </div>
+      </div>
+
+      <div style="margin-bottom: 7px;">
+        <label style="font-size: 7.5px; font-weight: 800; color: #475569; text-transform: uppercase; display: block; margin-bottom: 2px;">Password</label>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px 8px; font-size: 9px; color: #0f172a; letter-spacing: 2px;">
+          ••••••••••••
+        </div>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #f43f5e, #f59e0b, #8b5cf6); color: #fff; font-size: 9px; font-weight: 700; text-align: center; padding: 7px; border-radius: 10px; box-shadow: 0 3px 8px rgba(244,63,94,0.3);">
+        Sign In to Saturday Vibes ✦
+      </div>
+    </div>
+
+    <!-- 1-Click Demo Profiles -->
+    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 14px; padding: 7px 9px;">
+      <div style="font-size: 7.5px; font-weight: 800; color: #92400e; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+        <span>✦</span> 1-Click Demo Profiles (For Evaluators):
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+        <div style="background: #ffffff; border: 1.5px solid #f59e0b; border-radius: 8px; padding: 3px; text-align: center;">
+          <div style="font-size: 12px;">👩‍🎓</div>
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; line-height: 1.1;">Meera</div>
+          <div style="font-size: 6px; color: #b45309; font-weight: 600;">Final Yr CS</div>
+        </div>
+        <div style="background: #ffffff; border: 1px solid #fde68a; border-radius: 8px; padding: 3px; text-align: center;">
+          <div style="font-size: 12px;">👨‍💻</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #475569; line-height: 1.1;">Aarav</div>
+          <div style="font-size: 6px; color: #64748b;">Tech Lead</div>
+        </div>
+        <div style="background: #ffffff; border: 1px solid #fde68a; border-radius: 8px; padding: 3px; text-align: center;">
+          <div style="font-size: 12px;">👩‍🎤</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #475569; line-height: 1.1;">Priya</div>
+          <div style="font-size: 6px; color: #64748b;">Music Jam</div>
+        </div>
+      </div>
+      <div style="margin-top: 4px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 4px; text-align: center; font-size: 7.5px; font-weight: 700; color: #334155;">
+        🧭 Explore as Guest (Instant Access)
+      </div>
+    </div>
+  </div>
+`;
+
+const sheet1_screen2 = `
+  <div class="screen-content" style="padding: 36px 12px 18px 12px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+        <span style="font-size: 13px; font-weight: 900; color: #0f172a; letter-spacing: -0.3px;">Join Saturday Vibes</span>
+        <span style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; font-size: 7.5px; font-weight: 800; padding: 2px 6px; border-radius: 12px;">+25 Pts Bonus</span>
+      </div>
+      <p style="font-size: 8px; color: #64748b; margin-bottom: 9px;">Create your MVGR student profile to personalize weekend activities.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 9px;">
+        <div>
+          <label style="font-size: 7px; font-weight: 800; color: #475569; text-transform: uppercase;">Full Name *</label>
+          <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 5px 8px; font-size: 8.5px; font-weight: 600; color: #0f172a;">Meera Ramaswamy</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+          <div>
+            <label style="font-size: 7px; font-weight: 800; color: #475569; text-transform: uppercase;">Roll Number *</label>
+            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 5px 8px; font-size: 8.5px; font-weight: 600; color: #0f172a;">21331A0589</div>
+          </div>
+          <div>
+            <label style="font-size: 7px; font-weight: 800; color: #475569; text-transform: uppercase;">Year</label>
+            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 5px 8px; font-size: 8.5px; font-weight: 600; color: #0f172a;">Final Year</div>
+          </div>
+        </div>
+        <div>
+          <label style="font-size: 7px; font-weight: 800; color: #475569; text-transform: uppercase;">Department</label>
+          <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 5px 8px; font-size: 8.5px; font-weight: 600; color: #0f172a;">Computer Science & Engineering</div>
+        </div>
+      </div>
+
+      <div>
+        <label style="font-size: 7.5px; font-weight: 800; color: #0f172a; text-transform: uppercase; display: block; margin-bottom: 5px;">Pick Your Saturday Vibes (3 selected)</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+          <div style="background: #ffe4e6; border: 1.5px solid #f43f5e; color: #9f1239; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
+            <span>🎨 Art & Painting</span> <span>✓</span>
+          </div>
+          <div style="background: #f3e8ff; border: 1.5px solid #a855f7; color: #6b21a8; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
+            <span>🎵 Music & Jam</span> <span>✓</span>
+          </div>
+          <div style="background: #ecfdf5; border: 1.5px solid #10b981; color: #065f46; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
+            <span>🧘 Chill & Relax</span> <span>✓</span>
+          </div>
+          <div style="background: #fff; border: 1px solid #e2e8f0; color: #475569; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; font-weight: 600;">
+            <span>🎮 Gaming / FIFA</span>
+          </div>
+          <div style="background: #fff; border: 1px solid #e2e8f0; color: #475569; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; font-weight: 600;">
+            <span>💻 Coding & Tech</span>
+          </div>
+          <div style="background: #fff; border: 1px solid #e2e8f0; color: #475569; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; font-weight: 600;">
+            <span>⚽ Sports & Fitness</span>
+          </div>
+          <div style="background: #fff; border: 1px solid #e2e8f0; color: #475569; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; font-weight: 600;">
+            <span>🎬 Movie Screening</span>
+          </div>
+          <div style="background: #fff; border: 1px solid #e2e8f0; color: #475569; border-radius: 8px; padding: 4px 6px; font-size: 7.5px; font-weight: 600;">
+            <span>🍕 Food & Hangout</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #f43f5e, #8b5cf6); color: #fff; font-size: 9.5px; font-weight: 800; text-align: center; padding: 8.5px; border-radius: 11px; box-shadow: 0 4px 10px rgba(244,63,94,0.35);">
+      Create Profile & Get +25 Pts ➔
+    </div>
+  </div>
+`;
+
+const sheet1_screen3 = `
+  <div style="display: flex; flex-direction: column; height: 100%;">
+    <div class="screen-content" style="padding: 34px 10px 6px 10px; flex: 1; display: flex; flex-direction: column; gap: 7px;">
+      <!-- Top Brand Row -->
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <div style="width: 22px; height: 22px; border-radius: 7px; background: linear-gradient(135deg, #f59e0b, #f43f5e, #8b5cf6); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px;">✦</div>
+          <div>
+            <div style="font-size: 10px; font-weight: 900; color: #0f172a; line-height: 1;">Saturday Vibes</div>
+            <div style="font-size: 6.5px; color: #64748b; font-weight: 600;">Your Saturday. Your Vibe.</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 1.5px 6px; font-size: 7.5px; font-weight: 800; color: #b45309;">🏆 120 pts</div>
+          <div style="width: 20px; height: 20px; border-radius: 50%; background: #e0e7ff; border: 1px solid #c7d2fe; display: flex; align-items: center; justify-content: center; font-size: 10px;">👩‍🎓</div>
+        </div>
+      </div>
+
+      <!-- Hero Card -->
+      <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%); border-radius: 15px; padding: 9px; color: #fff; box-shadow: 0 4px 14px rgba(124,58,237,0.3);">
+        <span style="background: rgba(255,255,255,0.2); font-size: 6.5px; font-weight: 800; text-transform: uppercase; padding: 1.5px 5px; border-radius: 8px;">Reimagining Campus Weekends</span>
+        <h2 style="font-size: 12px; font-weight: 900; line-height: 1.2; margin: 3px 0 2px 0;">Make Your Saturday Count.</h2>
+        <p style="font-size: 7.5px; opacity: 0.9; margin-bottom: 6px;">Personalized activities matching your mood, friends, and energy.</p>
+        <div style="display: flex; gap: 5px;">
+          <div style="background: #ffffff; color: #4338ca; font-size: 7.5px; font-weight: 800; padding: 4px 8px; border-radius: 7px;">Find My Vibe ✦</div>
+          <div style="background: rgba(255,255,255,0.2); color: #fff; font-size: 7.5px; font-weight: 700; padding: 4px 7px; border-radius: 7px;">Explore (15)</div>
+        </div>
+      </div>
+
+      <!-- Category Pills -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+          <span style="font-size: 7.5px; font-weight: 800; color: #334155; text-transform: uppercase;">Top Categories</span>
+          <span style="font-size: 7px; color: #f43f5e; font-weight: 700;">View All (8+)</span>
+        </div>
+        <div style="display: flex; gap: 4px; overflow: hidden;">
+          <div style="background: #ffe4e6; border: 1px solid #fecdd3; border-radius: 12px; padding: 2px 6px; font-size: 7.5px; font-weight: 700; color: #9f1239; white-space: nowrap;">🎨 Art</div>
+          <div style="background: #f3e8ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 2px 6px; font-size: 7.5px; font-weight: 700; color: #6b21a8; white-space: nowrap;">🎵 Music</div>
+          <div style="background: #dbeafe; border: 1px solid #bfdbfe; border-radius: 12px; padding: 2px 6px; font-size: 7.5px; font-weight: 700; color: #1e40af; white-space: nowrap;">🎮 Gaming</div>
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 2px 6px; font-size: 7.5px; font-weight: 700; color: #065f46; white-space: nowrap;">🧘 Chill</div>
+        </div>
+      </div>
+
+      <!-- Featured Saturday Spotlight Card -->
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 13px; padding: 7px 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
+          <span style="background: #f1f5f9; color: #475569; font-size: 6.5px; font-weight: 800; padding: 1px 4px; border-radius: 5px;">Spotlight Activity</span>
+          <span style="color: #059669; font-size: 6.5px; font-weight: 800;">● 14 Joined</span>
+        </div>
+        <h4 style="font-size: 9.5px; font-weight: 800; color: #0f172a; margin-bottom: 1px;">Art Jam & Canvas Splash</h4>
+        <div style="font-size: 7px; color: #64748b; margin-bottom: 4px;">⏰ 11:00 AM • 📍 Fine Arts Studio 204</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 3px;">
+          <span style="font-size: 6.5px; color: #64748b;">By Vikram (Student Club)</span>
+          <span style="background: #f43f5e; color: #fff; font-size: 7px; font-weight: 800; padding: 2px 7px; border-radius: 5px;">Join (+20 pts)</span>
+        </div>
+      </div>
+
+      <!-- Campus Stats -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 4px 6px; display: flex; justify-content: space-around; text-align: center;">
+        <div><div style="font-size: 9.5px; font-weight: 900; color: #0f172a;">50+</div><div style="font-size: 6px; color: #64748b; font-weight: 600;">Activities</div></div>
+        <div><div style="font-size: 9.5px; font-weight: 900; color: #0f172a;">8+</div><div style="font-size: 6px; color: #64748b; font-weight: 600;">Categories</div></div>
+        <div><div style="font-size: 9.5px; font-weight: 900; color: #0f172a;">100%</div><div style="font-size: 6px; color: #64748b; font-weight: 600;">Student-Led</div></div>
+      </div>
+    </div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2 6.3-6.4 2 2-6.3z"/></svg>
+        <span>Discover</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>Quiz</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Schedule</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </div>
+    </div>
+  </div>
+`;
+
+// -------------------------------------------------------------
+// SHEET 2: Discovery, Event Details & Buddy Mode
+// -------------------------------------------------------------
+const sheet2_screen1 = `
+  <div style="display: flex; flex-direction: column; height: 100%;">
+    <div class="screen-content" style="padding: 34px 10px 6px 10px; flex: 1; display: flex; flex-direction: column; gap: 6px;">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <h2 style="font-size: 13px; font-weight: 900; color: #0f172a;">Discover Activities</h2>
+          <span style="font-size: 7.5px; background: #e0f2fe; color: #0369a1; font-weight: 800; padding: 1.5px 6px; border-radius: 10px;">15 Events</span>
+        </div>
+        <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 9px; padding: 4.5px 8px; display: flex; align-items: center; gap: 5px; font-size: 8px; color: #94a3b8;">
+          <span>🔍</span> <span>Search activities, venues, moods...</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 4px; overflow: hidden;">
+        <div style="background: #f43f5e; color: #fff; font-size: 7px; font-weight: 800; padding: 2px 7px; border-radius: 10px;">All (15)</div>
+        <div style="background: #f1f5f9; color: #475569; font-size: 7px; font-weight: 700; padding: 2px 7px; border-radius: 10px;">🎨 Art</div>
+        <div style="background: #f1f5f9; color: #475569; font-size: 7px; font-weight: 700; padding: 2px 7px; border-radius: 10px;">🎵 Music</div>
+        <div style="background: #f1f5f9; color: #475569; font-size: 7px; font-weight: 700; padding: 2px 7px; border-radius: 10px;">🎮 Gaming</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <div style="background: #fff; border: 1.5px solid #fecdd3; border-radius: 11px; padding: 6px 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <span style="background: #ffe4e6; color: #9f1239; font-size: 6.5px; font-weight: 800; padding: 1px 5px; border-radius: 4px;">🎨 ART JAM</span>
+            <span style="font-size: 6.5px; color: #059669; font-weight: 800;">✓ In My Saturday</span>
+          </div>
+          <h4 style="font-size: 9px; font-weight: 800; color: #0f172a;">Art Jam & Canvas Splash</h4>
+          <div style="font-size: 7px; color: #64748b; margin: 1px 0 3px 0;">⏰ 11:00 AM (2h) • 📍 Art Studio 204 • 14 joined</div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 6.5px; color: #94a3b8;">Beginner Friendly</span>
+            <span style="background: #f1f5f9; color: #334155; font-size: 7px; font-weight: 700; padding: 2px 6px; border-radius: 5px;">View Details ➔</span>
+          </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 11px; padding: 6px 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <span style="background: #ede9fe; color: #6d28d9; font-size: 6.5px; font-weight: 800; padding: 1px 5px; border-radius: 4px;">📷 PHOTOGRAPHY</span>
+            <span style="font-size: 6.5px; color: #64748b;">22 Joined</span>
+          </div>
+          <h4 style="font-size: 9px; font-weight: 800; color: #0f172a;">Campus Golden Hour Photowalk</h4>
+          <div style="font-size: 7px; color: #64748b; margin: 1px 0 3px 0;">⏰ 03:00 PM (2h) • 📍 Central Lawn • All Phones</div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 6.5px; color: #94a3b8;">Outdoor • Social</span>
+            <span style="background: #f43f5e; color: #fff; font-size: 7px; font-weight: 800; padding: 2px 7px; border-radius: 5px;">+ Join (+20 pts)</span>
+          </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 11px; padding: 6px 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <span style="background: #dbeafe; color: #1e40af; font-size: 6.5px; font-weight: 800; padding: 1px 5px; border-radius: 4px;">🎮 GAMING</span>
+            <span style="font-size: 6.5px; color: #64748b;">16 Joined</span>
+          </div>
+          <h4 style="font-size: 9px; font-weight: 800; color: #0f172a;">Super Smash & FIFA Tournament</h4>
+          <div style="font-size: 7px; color: #64748b; margin: 1px 0 3px 0;">⏰ 02:00 PM (2.5h) • 📍 Tech Hub Room 102</div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 6.5px; color: #94a3b8;">Competitive • Indoor</span>
+            <span style="background: #f43f5e; color: #fff; font-size: 7px; font-weight: 800; padding: 2px 7px; border-radius: 5px;">+ Join (+20 pts)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2 6.3-6.4 2 2-6.3z"/></svg>
+        <span>Discover</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>Quiz</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Schedule</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </div>
+    </div>
+  </div>
+`;
+
+const sheet2_screen2 = `
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+        <span style="font-size: 7.5px; font-weight: 700; color: #475569;">‹ Back to Discover</span>
+        <span style="background: #ffe4e6; color: #be123c; font-size: 6.5px; font-weight: 800; padding: 2px 6px; border-radius: 10px;">🎨 Art & Design</span>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #fb7185, #e11d48); border-radius: 13px; padding: 9px; color: #fff; margin-bottom: 7px;">
+        <h2 style="font-size: 12px; font-weight: 900; line-height: 1.2;">Art Jam & Canvas Splash</h2>
+        <p style="font-size: 7.5px; opacity: 0.9; margin-top: 2px;">Paint freely, share techniques, and unwind with peers.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 7px;">
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4.5px 6px;">
+          <div style="font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase;">Date & Time</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #0f172a;">Sat, 11:00 AM (2 hrs)</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4.5px 6px;">
+          <div style="font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase;">Location</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #0f172a;">Studio 204, Fine Arts</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4.5px 6px;">
+          <div style="font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase;">Organizer</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #0f172a;">Vikram (Student Lead)</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4.5px 6px;">
+          <div style="font-size: 6px; font-weight: 800; color: #64748b; text-transform: uppercase;">Availability</div>
+          <div style="font-size: 7.5px; font-weight: 700; color: #059669;">14 / 20 Registered</div>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px; margin-bottom: 6px;">
+        <div style="font-size: 7px; font-weight: 800; color: #334155; text-transform: uppercase; margin-bottom: 2px;">What To Bring & Setup</div>
+        <div style="font-size: 6.5px; color: #475569; display: flex; flex-direction: column; gap: 1.5px;">
+          <div>✓ Canvases & acrylic colors supplied by club</div>
+          <div>✓ Aprons and painting brushes available</div>
+          <div>✓ No prior experience required (Zero intimidation)</div>
+        </div>
+      </div>
+
+      <!-- Peer Attendees -->
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 7px;">
+        <div style="font-size: 6.5px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">Classmates Attending (14)</div>
+        <div style="display: flex; align-items: center; gap: 4px; font-size: 7px; color: #334155;">
+          <span>Sneha P., Rohan K., Ananya S. +11 others</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dual Actions with proper bottom margin -->
+    <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px;">
+      <div style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 9px; font-weight: 800; text-align: center; padding: 7.5px; border-radius: 9px; box-shadow: 0 2px 6px rgba(16,185,129,0.3);">
+        ✓ Joined in My Saturday (+20 pts)
+      </div>
+      <div style="background: #ffffff; border: 1.5px solid #f43f5e; color: #be123c; font-size: 8.5px; font-weight: 800; text-align: center; padding: 6px; border-radius: 9px;">
+        🤝 Invite Friend (Buddy Mode)
+      </div>
+    </div>
+  </div>
+`;
+
+const sheet2_screen3 = `
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span style="font-size: 7.5px; font-weight: 700; color: #475569;">‹ Back</span>
+        <span style="background: #ecfdf5; color: #059669; font-size: 6.5px; font-weight: 800; padding: 1.5px 5px; border-radius: 8px;">Peer Support</span>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #0ea5e9, #3b82f6); border-radius: 13px; padding: 8px; color: #fff; margin-bottom: 7px;">
+        <span style="background: rgba(255,255,255,0.25); font-size: 6px; font-weight: 800; padding: 1px 4px; border-radius: 5px; text-transform: uppercase;">Buddy Mode</span>
+        <h3 style="font-size: 10.5px; font-weight: 900; margin: 2px 0 1px 0;">Never Attend Alone 🤝</h3>
+        <p style="font-size: 7px; opacity: 0.9;">Invite campus friends or match with classmates attending this vibe.</p>
+      </div>
+
+      <div style="background: #f1f5f9; border-radius: 7px; padding: 4px 6px; font-size: 7px; color: #334155; margin-bottom: 6px;">
+        Inviting peers to: <strong style="color: #0f172a;">Art Jam & Canvas Splash</strong>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 7px; padding: 4.5px 7px; font-size: 7.5px; color: #94a3b8; margin-bottom: 7px;">
+        🔍 Search classmates by name or roll no...
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #fed7aa; display: flex; align-items: center; justify-content: center; font-size: 10px;">👨‍🎓</div>
+            <div>
+              <div style="font-size: 8px; font-weight: 800; color: #0f172a;">Rohan K.</div>
+              <div style="font-size: 6px; color: #64748b;">3rd Yr CSE • Shared: Art & Chill</div>
+            </div>
+          </div>
+          <div style="background: #f43f5e; color: #fff; font-size: 6.5px; font-weight: 800; padding: 2.5px 6px; border-radius: 5px;">Invite</div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #ddd6fe; display: flex; align-items: center; justify-content: center; font-size: 10px;">👩‍🎓</div>
+            <div>
+              <div style="font-size: 8px; font-weight: 800; color: #0f172a;">Sneha P.</div>
+              <div style="font-size: 6px; color: #64748b;">2nd Yr IT • Shared: Creative</div>
+            </div>
+          </div>
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; font-size: 6.5px; font-weight: 800; padding: 2.5px 6px; border-radius: 5px;">✓ Invited</div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #fbcfe8; display: flex; align-items: center; justify-content: center; font-size: 10px;">👩‍🎨</div>
+            <div>
+              <div style="font-size: 8px; font-weight: 800; color: #0f172a;">Ananya S.</div>
+              <div style="font-size: 6px; color: #059669; font-weight: 700;">Already Attending! 🎉</div>
+            </div>
+          </div>
+          <div style="background: #f1f5f9; color: #475569; font-size: 6.5px; font-weight: 700; padding: 2.5px 6px; border-radius: 5px;">Chat</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 9px; padding: 5px 7px; text-align: center; font-size: 6.5px; color: #64748b; margin-bottom: 2px;">
+      💡 Low-Pressure Rule: You can meet at the studio entrance or sit together. Zero social anxiety.
+    </div>
+  </div>
+`;
+
+// -------------------------------------------------------------
+// SHEET 3: Personalization Algorithm & Student Event Creation
+// -------------------------------------------------------------
+const sheet3_screen1 = `
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+        <span style="font-size: 12px; font-weight: 900; color: #0f172a;">Find My Saturday</span>
+        <span style="background: #f3e8ff; color: #7e22ce; font-size: 7px; font-weight: 800; padding: 2px 6px; border-radius: 10px;">AI Recommender</span>
+      </div>
+      <p style="font-size: 7.5px; color: #64748b; margin-bottom: 8px;">Step 2 of 5 • Tailoring activities to your energy level</p>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <!-- Card 1 -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 8px;">
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">1. What's your Saturday mood?</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 3px;">
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">Energetic</div>
+            <div style="background: #ffe4e6; border: 1.5px solid #f43f5e; color: #be123c; font-weight: 700; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">🎨 Creative ✓</div>
+            <div style="background: #f3e8ff; border: 1.5px solid #9333ea; color: #6b21a8; font-weight: 700; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">🤝 Social ✓</div>
+            <div style="background: #ecfdf5; border: 1.5px solid #059669; color: #065f46; font-weight: 700; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">🧘 Relaxed ✓</div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 8px;">
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">2. How do you want to participate?</div>
+          <div style="display: flex; gap: 3px;">
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">Alone</div>
+            <div style="background: #dbeafe; border: 1.5px solid #2563eb; color: #1e40af; font-weight: 800; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">👥 With Friends ✓</div>
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">Meet New</div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 8px;">
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">3. How much time do you have?</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 3px;">
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">&lt; 1 hour</div>
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">1–2 hours</div>
+            <div style="background: #fef3c7; border: 1.5px solid #d97706; color: #92400e; font-weight: 800; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">⏰ 2–4 hours ✓</div>
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 5px; font-size: 6.5px;">Flexible</div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 8px;">
+          <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">4. Preferred activity mode:</div>
+          <div style="display: flex; gap: 4px;">
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">Indoor</div>
+            <div style="background: #fff; border: 1px solid #cbd5e1; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">Outdoor</div>
+            <div style="background: #f1f5f9; border: 1.5px solid #475569; color: #0f172a; font-weight: 800; padding: 2.5px 5px; border-radius: 5px; font-size: 6.5px;">🌿 Either ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div style="background: linear-gradient(135deg, #f59e0b, #f43f5e, #8b5cf6); color: #fff; font-size: 9.5px; font-weight: 800; text-align: center; padding: 8.5px; border-radius: 11px; box-shadow: 0 4px 10px rgba(244,63,94,0.35);">
+      Generate My Saturday Vibes ✨
+    </div>
+  </div>
+`;
+
+const sheet3_screen2 = `
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border-radius: 12px; padding: 8px; color: #fff; margin-bottom: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 6.5px; font-weight: 800; background: rgba(255,255,255,0.25); padding: 1.5px 5px; border-radius: 6px;">YOUR SATURDAY VIBE</span>
+          <span style="font-size: 8px; font-weight: 900; background: #fff; color: #db2777; padding: 1.5px 6px; border-radius: 10px;">96% Match</span>
+        </div>
+        <p style="font-size: 8px; font-weight: 800; margin-top: 3px;">You seem to be a Creative + Social + Relaxed person.</p>
+      </div>
+
+      <!-- Match 1 -->
+      <div style="background: #fff; border: 1.5px solid #f43f5e; border-radius: 10px; padding: 6px 8px; margin-bottom: 5px; box-shadow: 0 2px 6px rgba(244,63,94,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="background: #ffe4e6; color: #9f1239; font-size: 6px; font-weight: 800; padding: 1px 4px; border-radius: 4px;">TOP MATCH • 96%</span>
+          <span style="font-size: 6.5px; color: #059669; font-weight: 800;">✓ In Schedule</span>
+        </div>
+        <h4 style="font-size: 9px; font-weight: 900; color: #0f172a;">Art Jam & Canvas Splash</h4>
+        <div style="font-size: 6.5px; color: #64748b; margin-bottom: 2px;">⏰ 11:00 AM • Fine Arts Studio 204</div>
+        <div style="background: #fff1f2; border-radius: 5px; padding: 2.5px 5px; font-size: 6px; color: #9f1239;">
+          ✦ Matches your Creative mood & With Friends vibe
+        </div>
+      </div>
+
+      <!-- Match 2 -->
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 8px; margin-bottom: 5px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="background: #f1f5f9; color: #475569; font-size: 6px; font-weight: 700; padding: 1px 4px; border-radius: 4px;">91% MATCH</span>
+          <span style="font-size: 6.5px; color: #f43f5e; font-weight: 800;">+ Add</span>
+        </div>
+        <h4 style="font-size: 9px; font-weight: 900; color: #0f172a;">Campus Photography Walk</h4>
+        <div style="font-size: 6.5px; color: #64748b; margin-bottom: 2px;">⏰ 03:00 PM • Campus Quad Clock Tower</div>
+        <div style="background: #f8fafc; border-radius: 5px; padding: 2.5px 5px; font-size: 6px; color: #475569;">
+          ✦ Fits 2-4h window & outdoor relaxed preference
+        </div>
+      </div>
+
+      <!-- Match 3 -->
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="background: #f1f5f9; color: #475569; font-size: 6px; font-weight: 700; padding: 1px 4px; border-radius: 4px;">88% MATCH</span>
+          <span style="font-size: 6.5px; color: #f43f5e; font-weight: 800;">+ Add</span>
+        </div>
+        <h4 style="font-size: 9px; font-weight: 900; color: #0f172a;">Cozy Movie Screening & Popcorn</h4>
+        <div style="font-size: 6.5px; color: #64748b; margin-bottom: 2px;">⏰ 06:30 PM • Seminar Auditorium B</div>
+        <div style="background: #f8fafc; border-radius: 5px; padding: 2.5px 5px; font-size: 6px; color: #475569;">
+          ✦ Fits your Relaxed mood preference
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <div style="background: #0f172a; color: #fff; font-size: 8.5px; font-weight: 800; text-align: center; padding: 7px; border-radius: 9px;">
+        View My Saturday Schedule ➔
+      </div>
+      <div style="background: #f1f5f9; color: #475569; font-size: 7px; font-weight: 700; text-align: center; padding: 4px; border-radius: 7px;">
+        Retake Questionnaire
+      </div>
+    </div>
+  </div>
+`;
+
+const sheet3_screen3 = `
+  <div class="screen-content" style="padding: 34px 10px 18px 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+        <h3 style="font-size: 11.5px; font-weight: 900; color: #0f172a;">Host Saturday Vibe</h3>
+        <span style="background: #ecfdf5; color: #059669; font-size: 6.5px; font-weight: 800; padding: 1.5px 5px; border-radius: 8px;">+50 Creator Pts</span>
+      </div>
+      <p style="font-size: 7px; color: #64748b; margin-bottom: 6px;">Zero red-tape. Propose student jams, games, or study sprints.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 4.5px;">
+        <div>
+          <label style="font-size: 6.5px; font-weight: 800; color: #475569; text-transform: uppercase;">Event Title *</label>
+          <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 6px; font-size: 7.5px; font-weight: 600; color: #0f172a;">
+            Acoustic Sunset Jam & Vocals
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+          <div>
+            <label style="font-size: 6.5px; font-weight: 800; color: #475569; text-transform: uppercase;">Category</label>
+            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 6px; font-size: 7.5px; font-weight: 600; color: #0f172a;">
+              🎵 Music & Jam
+            </div>
+          </div>
+          <div>
+            <label style="font-size: 6.5px; font-weight: 800; color: #475569; text-transform: uppercase;">Time</label>
+            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 6px; font-size: 7.5px; font-weight: 600; color: #0f172a;">
+              05:30 PM
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 6.5px; font-weight: 800; color: #475569; text-transform: uppercase;">Campus Location / Venue</label>
+          <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 6px; font-size: 7.5px; font-weight: 600; color: #0f172a;">
+            Campus Open Amphitheatre
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+          <div>
+            <label style="font-size: 6.5px; font-weight: 800; color: #475569; text-transform: uppercase;">Duration</label>
+            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 6px; font-size: 7.5px; font-weight: 600; color: #0f172a;">
+              1.5 Hours
+            </div>
+          </div>
+          <div>
+            <label style="font-size: 6.5px; font-weight: 800; color: #475569; text-transform: uppercase;">Max Capacity</label>
+            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 6px; font-size: 7.5px; font-weight: 600; color: #0f172a;">
+              30 Students
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 6.5px; font-weight: 800; color: #475569; text-transform: uppercase;">Vibe Moods</label>
+          <div style="display: flex; gap: 3px;">
+            <span style="background: #ffe4e6; color: #be123c; font-size: 6px; font-weight: 700; padding: 1px 4px; border-radius: 4px;">Creative ✓</span>
+            <span style="background: #f3e8ff; color: #7e22ce; font-size: 6px; font-weight: 700; padding: 1px 4px; border-radius: 4px;">Social ✓</span>
+            <span style="background: #ecfdf5; color: #065f46; font-size: 6px; font-weight: 700; padding: 1px 4px; border-radius: 4px;">Relaxed ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit CTA -->
+    <div style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 9px; font-weight: 800; text-align: center; padding: 7.5px; border-radius: 10px; box-shadow: 0 3px 8px rgba(16,185,129,0.3);">
+      🚀 Publish Campus Activity (+50 pts)
+    </div>
+  </div>
+`;
+
+// -------------------------------------------------------------
+// SHEET 4: Student Schedule, Gamification & Capstone Persona
+// -------------------------------------------------------------
+const sheet4_screen1 = `
+  <div style="display: flex; flex-direction: column; height: 100%;">
+    <div class="screen-content" style="padding: 34px 10px 6px 10px; flex: 1; display: flex; flex-direction: column; gap: 6px;">
+      <div style="background: linear-gradient(135deg, #0f172a, #1e1b4b, #311042); border-radius: 13px; padding: 8px 10px; color: #fff;">
+        <div style="font-size: 6.5px; font-weight: 800; color: #fde047; text-transform: uppercase;">Personalized Schedule</div>
+        <h3 style="font-size: 11px; font-weight: 900; margin: 1px 0 2px 0;">Meera's Saturday</h3>
+        <div style="display: flex; gap: 8px; font-size: 7px; color: #cbd5e1;">
+          <span>⏰ 4.5 hrs planned</span>
+          <span>🏆 170 Saturday pts</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <div style="background: #fff; border-left: 3px solid #f43f5e; border-radius: 8px; padding: 6px 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 7px; font-weight: 800; color: #f43f5e;">11:00 AM – 01:00 PM</span>
+            <span style="font-size: 6px; background: #ecfdf5; color: #059669; font-weight: 800; padding: 1px 4px; border-radius: 4px;">Going ✓</span>
+          </div>
+          <div style="font-size: 8.5px; font-weight: 800; color: #0f172a;">🎨 Art Jam & Canvas Splash</div>
+          <div style="font-size: 6.5px; color: #64748b;">Fine Arts Studio 204 • Buddy: Sneha P.</div>
+        </div>
+
+        <div style="background: #fff; border-left: 3px solid #8b5cf6; border-radius: 8px; padding: 6px 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 7px; font-weight: 800; color: #8b5cf6;">03:00 PM – 05:00 PM</span>
+            <span style="font-size: 6px; background: #ecfdf5; color: #059669; font-weight: 800; padding: 1px 4px; border-radius: 4px;">Going ✓</span>
+          </div>
+          <div style="font-size: 8.5px; font-weight: 800; color: #0f172a;">📷 Golden Hour Photowalk</div>
+          <div style="font-size: 6.5px; color: #64748b;">Campus Quad Clock Tower • 22 peers</div>
+        </div>
+
+        <div style="background: #fff; border-left: 3px solid #f59e0b; border-radius: 8px; padding: 6px 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 7px; font-weight: 800; color: #f59e0b;">06:30 PM – 08:00 PM</span>
+            <span style="font-size: 6px; background: #fffbeb; color: #b45309; font-weight: 800; padding: 1px 4px; border-radius: 4px;">Optional</span>
+          </div>
+          <div style="font-size: 8.5px; font-weight: 800; color: #0f172a;">🎬 Cozy Movie Evening & Popcorn</div>
+          <div style="font-size: 6.5px; color: #64748b;">Seminar Auditorium B • Chill Vibe</div>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px; text-align: center; font-size: 7px; font-weight: 700; color: #334155;">
+        📅 Export to Google Calendar
+      </div>
+    </div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2 6.3-6.4 2 2-6.3z"/></svg>
+        <span>Discover</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>Quiz</span>
+      </div>
+      <div class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Schedule</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </div>
+    </div>
+  </div>
+`;
+
+const sheet4_screen2 = `
+  <div style="display: flex; flex-direction: column; height: 100%;">
+    <div class="screen-content" style="padding: 34px 10px 6px 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 13px; padding: 8px 10px; color: #fff; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.1);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 6.5px; font-weight: 800; color: #fb7185; text-transform: uppercase;">MVGR College Student ID</span>
+            <span style="background: #22c55e; color: #fff; font-size: 5.5px; font-weight: 800; padding: 1px 4px; border-radius: 4px;">Active</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 7px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #fed7aa; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #fb7185;">👩‍🎓</div>
+            <div>
+              <h3 style="font-size: 10.5px; font-weight: 900;">Meera Ramaswamy</h3>
+              <div style="font-size: 6.5px; color: #cbd5e1;">Roll: 21331A0589 • Final Year CS</div>
+              <div style="font-size: 6px; color: #facc15; font-weight: 700; margin-top: 1px;">Level 3 Campus Explorer (170 Pts)</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 6px;">
+          <div style="font-size: 7px; font-weight: 800; color: #334155; text-transform: uppercase; margin-bottom: 3px;">Earned Saturday Badges (4)</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+            <div style="background: #fff; border: 1px solid #fde68a; border-radius: 7px; padding: 3.5px 5px; display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 11px;">🌟</span>
+              <div>
+                <div style="font-size: 6.5px; font-weight: 800; color: #0f172a;">First Vibe</div>
+                <div style="font-size: 5.5px; color: #64748b;">Joined 1st activity</div>
+              </div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fbcfe8; border-radius: 7px; padding: 3.5px 5px; display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 11px;">🎨</span>
+              <div>
+                <div style="font-size: 6.5px; font-weight: 800; color: #0f172a;">Creative Mind</div>
+                <div style="font-size: 5.5px; color: #64748b;">Art Jam unlocked</div>
+              </div>
+            </div>
+            <div style="background: #fff; border: 1px solid #c7d2fe; border-radius: 7px; padding: 3.5px 5px; display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 11px;">🤝</span>
+              <div>
+                <div style="font-size: 6.5px; font-weight: 800; color: #0f172a;">Social Spark</div>
+                <div style="font-size: 5.5px; color: #64748b;">Buddy mode invite</div>
+              </div>
+            </div>
+            <div style="background: #fff; border: 1px solid #fed7aa; border-radius: 7px; padding: 3.5px 5px; display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 11px;">🔥</span>
+              <div>
+                <div style="font-size: 6.5px; font-weight: 800; color: #0f172a;">Weekend Regular</div>
+                <div style="font-size: 5.5px; color: #64748b;">3+ events scheduled</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 5px 6px;">
+          <div style="font-size: 6.5px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 2px;">Meera's Preferences</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 2.5px;">
+            <span style="background: #fff; border: 1px solid #cbd5e1; font-size: 6px; font-weight: 600; padding: 1.5px 4px; border-radius: 4px;">🎨 Art & Painting</span>
+            <span style="background: #fff; border: 1px solid #cbd5e1; font-size: 6px; font-weight: 600; padding: 1.5px 4px; border-radius: 4px;">🎵 Music Jam</span>
+            <span style="background: #fff; border: 1px solid #cbd5e1; font-size: 6px; font-weight: 600; padding: 1.5px 4px; border-radius: 4px;">🧘 Chill</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #fecdd3; color: #be123c; font-size: 7.5px; font-weight: 800; text-align: center; padding: 5.5px; border-radius: 8px;">
+        Log Out & Return to Campus Login ➔
+      </div>
+    </div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2 6.3-6.4 2 2-6.3z"/></svg>
+        <span>Discover</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>Quiz</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Schedule</span>
+      </div>
+      <div class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </div>
+    </div>
+  </div>
+`;
+
+const sheet4_screen3 = `
+  <div style="display: flex; flex-direction: column; height: 100%;">
+    <div class="screen-content" style="padding: 34px 10px 6px 10px; flex: 1; display: flex; flex-direction: column; gap: 6px;">
+      <div style="background: linear-gradient(135deg, #1e293b, #334155); border-radius: 12px; padding: 7px 9px; color: #fff;">
+        <div style="font-size: 6.5px; font-weight: 800; color: #f43f5e; text-transform: uppercase;">Digital Engineering Lab Capstone</div>
+        <h3 style="font-size: 10.5px; font-weight: 900; margin: 1px 0;">Reimagining Saturdays</h3>
+        <p style="font-size: 6.5px; color: #94a3b8;">Making campus weekend activities genuinely irresistible</p>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="font-size: 8px; font-weight: 800; color: #0f172a;">User Persona: Meera (21)</span>
+          <span style="font-size: 6.5px; color: #64748b;">Final Year</span>
+        </div>
+        <p style="font-size: 7px; color: #475569; line-height: 1.25;">
+          "Enjoys relaxing on weekends. Typical campus events feel repetitive, rigid, and compulsory rather than fun."
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px;">
+        <div style="font-size: 7px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 4px;">Student Problem ➔ Solution</div>
+        <div style="display: flex; flex-direction: column; gap: 3px; font-size: 6.5px;">
+          <div style="background: #fff; border-radius: 5px; padding: 3px 5px; border: 1px solid #f1f5f9;">
+            <span style="color: #be123c; font-weight: 700;">❌ Repetitive events</span> ➔ <span style="color: #059669; font-weight: 700;">✅ 10+ Diverse Vibes</span>
+          </div>
+          <div style="background: #fff; border-radius: 5px; padding: 3px 5px; border: 1px solid #f1f5f9;">
+            <span style="color: #be123c; font-weight: 700;">❌ Fixed rigid hours</span> ➔ <span style="color: #059669; font-weight: 700;">✅ Flexible time slots</span>
+          </div>
+          <div style="background: #fff; border-radius: 5px; padding: 3px 5px; border: 1px solid #f1f5f9;">
+            <span style="color: #be123c; font-weight: 700;">❌ Awkward attending alone</span> ➔ <span style="color: #059669; font-weight: 700;">✅ Peer Buddy Mode</span>
+          </div>
+          <div style="background: #fff; border-radius: 5px; padding: 3px 5px; border: 1px solid #f1f5f9;">
+            <span style="color: #be123c; font-weight: 700;">❌ Forced attendance</span> ➔ <span style="color: #059669; font-weight: 700;">✅ Student-led choices</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2 6.3-6.4 2 2-6.3z"/></svg>
+        <span>Discover</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>Quiz</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Schedule</span>
+      </div>
+      <div class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>About</span>
+      </div>
+    </div>
+  </div>
+`;
+
+function buildHtmlPage(title, p1, p2, p3) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${title}</title>
+  <style>${sharedStyles}</style>
+</head>
+<body>
+  <div class="a3-container">
+    ${wrapPhone(p1)}
+    ${wrapPhone(p2)}
+    ${wrapPhone(p3)}
+  </div>
+</body>
+</html>`;
+}
+
+const htmlFiles = [
+  {
+    name: 'sheet1.html',
+    title: 'Saturday Vibes - Sheet 1: Onboarding & Hub Home',
+    content: buildHtmlPage('Saturday Vibes - Sheet 1', sheet1_screen1, sheet1_screen2, sheet1_screen3),
+    outputImg: 'saturday_vibes_a3_sheet_1.png'
+  },
+  {
+    name: 'sheet2.html',
+    title: 'Saturday Vibes - Sheet 2: Discovery, Details & Buddy Mode',
+    content: buildHtmlPage('Saturday Vibes - Sheet 2', sheet2_screen1, sheet2_screen2, sheet2_screen3),
+    outputImg: 'saturday_vibes_a3_sheet_2.png'
+  },
+  {
+    name: 'sheet3.html',
+    title: 'Saturday Vibes - Sheet 3: Personalization & Event Creation',
+    content: buildHtmlPage('Saturday Vibes - Sheet 3', sheet3_screen1, sheet3_screen2, sheet3_screen3),
+    outputImg: 'saturday_vibes_a3_sheet_3.png'
+  },
+  {
+    name: 'sheet4.html',
+    title: 'Saturday Vibes - Sheet 4: Schedule, Gamification & Capstone Persona',
+    content: buildHtmlPage('Saturday Vibes - Sheet 4', sheet4_screen1, sheet4_screen2, sheet4_screen3),
+    outputImg: 'saturday_vibes_a3_sheet_4.png'
+  }
+];
+
+const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+const tempDir = process.env.TEMP || 'C:\\Users\\venka\\AppData\\Local\\Temp';
+const userDataDir = path.join(tempDir, 'chrome_a3_capture');
+
+for (const item of htmlFiles) {
+  const htmlPath = path.join(rootDir, 'scripts', item.name);
+  fs.writeFileSync(htmlPath, item.content);
+
+  const outputImgPath = path.join(rootDir, item.outputImg);
+  const fileUrl = 'file:///' + htmlPath.replace(/\\/g, '/');
+  const cmd = `"${chromePath}" --headless=new --disable-gpu --user-data-dir="${userDataDir}" --window-size=1024,723 --screenshot="${outputImgPath}" "${fileUrl}"`;
+  
+  execSync(cmd, { stdio: 'inherit' });
+  console.log(`✓ Rendered: ${item.outputImg}`);
+}
+
+console.log('\nAll 4 polished A3 sheets re-rendered successfully!');

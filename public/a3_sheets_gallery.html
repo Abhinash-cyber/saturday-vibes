@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saturday Vibes - A3 Presentation Sheets Gallery</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #f8fafc;
+      padding: 30px;
+    }
+    .header {
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #f43f5e, #f59e0b, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+    .btn {
+      background: #f43f5e;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-secondary {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+    }
+    .gallery {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    .sheet-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .sheet-header {
+      padding: 16px 20px;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sheet-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #f1f5f9;
+    }
+    .sheet-screens {
+      font-size: 12px;
+      color: #fb7185;
+      font-weight: 600;
+    }
+    .sheet-preview {
+      width: 100%;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+    .sheet-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .header, .actions, .sheet-header {
+        display: none !important;
+      }
+      .sheet-card {
+        border: none;
+        box-shadow: none;
+        page-break-after: always;
+        border-radius: 0;
+      }
+      .sheet-preview {
+        padding: 0;
+      }
+      .sheet-preview img {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+      }
+      @page {
+        size: A3 landscape;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Saturday Vibes — A3 Presentation Mockups</h1>
+    <p>Digital Engineering Lab Capstone Project • MVGR College of Engineering</p>
+    <div class="actions">
+      <button class="btn" onclick="window.print()">🖨️ Print / Save All as A3 PDF</button>
+      <a class="btn btn-secondary" href="https://abhinash-cyber.github.io/saturday-vibes/" target="_blank">🌐 Live Project Website</a>
+    </div>
+  </div>
+
+  <div class="gallery">
+
+    <!-- SHEET 1 -->
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title">Sheet 1: Campus Identity, Authentication & Home Hub</div>
+          <div class="sheet-screens">Screen 1: Campus Login (MVGR Gate) • Screen 2: Student Sign Up & Vibe Selection • Screen 3: Saturday Vibes Home Hub</div>
+        </div>
+        <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_1.png" download>Download PNG</a>
+      </div>
+      <div class="sheet-preview">
+        <img src="saturday_vibes_a3_sheet_1.png" alt="Saturday Vibes Sheet 1">
+      </div>
+    </div>
+
+    <!-- SHEET 2 -->
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title">Sheet 2: Activity Discovery, Details & Peer Buddy Mode</div>
+          <div class="sheet-screens">Screen 1: Discover Activities Feed • Screen 2: Event Details Screen • Screen 3: Buddy Mode (Never Attend Alone)</div>
+        </div>
+        <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_2.png" download>Download PNG</a>
+      </div>
+      <div class="sheet-preview">
+        <img src="saturday_vibes_a3_sheet_2.png" alt="Saturday Vibes Sheet 2">
+      </div>
+    </div>
+
+    <!-- SHEET 3 -->
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title">Sheet 3: Personalization Algorithm & Student Event Creation</div>
+          <div class="sheet-screens">Screen 1: Find My Saturday Quiz • Screen 2: Personalized Recommendation (96% Match) • Screen 3: Host Student-Led Event</div>
+        </div>
+        <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_3.png" download>Download PNG</a>
+      </div>
+      <div class="sheet-preview">
+        <img src="saturday_vibes_a3_sheet_3.png" alt="Saturday Vibes Sheet 3">
+      </div>
+    </div>
+
+    <!-- SHEET 4 -->
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title">Sheet 4: Student Schedule, Gamification Badges & Capstone Persona</div>
+          <div class="sheet-screens">Screen 1: Meera's Saturday Itinerary • Screen 2: MVGR Student ID & Badges • Screen 3: Capstone Design Journey & Meera Persona</div>
+        </div>
+        <a class="btn btn-secondary" href="saturday_vibes_a3_sheet_4.png" download>Download PNG</a>
+      </div>
+      <div class="sheet-preview">
+        <img src="saturday_vibes_a3_sheet_4.png" alt="Saturday Vibes Sheet 4">
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
